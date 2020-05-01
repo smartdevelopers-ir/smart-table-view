@@ -31,7 +31,7 @@ public abstract class BaseSmartItemViewHolder {
         ViewGroup.LayoutParams params=getItemView().getLayoutParams();
         params.width=width;
         getItemView().setLayoutParams(params);
-    };
+    }
     /**
      * This method used by {@link SmartTableView} to change height of all cells according to
      * maximum height of cells in the row
@@ -41,26 +41,26 @@ public abstract class BaseSmartItemViewHolder {
         ViewGroup.LayoutParams params=getItemView().getLayoutParams();
         params.height=height;
         getItemView().setLayoutParams(params);
-    };
+    }
     /**
      * Returns the table cell width
      * */
     protected  int getLayoutWidth(){
         return getItemView().getWidth();
-    };
+    }
     /**
      * Returns the table cell height
      * */
     protected  int getLayoutHeight(){
         return getItemView().getHeight();
-    };
+    }
 
     public View getItemView(){
         return mItemView;
     }
     public void setBackground(Drawable drawable){
         getItemView().setBackground(drawable);
-    };
+    }
 
     public Object getTag() {
         return tag;
