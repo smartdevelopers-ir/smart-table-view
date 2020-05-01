@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layoutDirection="inherit"
+    android:id="@+id/table_root">
+    <RelativeLayout
+        android:id="@+id/table_right_top_corner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/sideBar_holder"
+        android:layout_alignBottom="@id/header_holder"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layoutDirection="inherit"
+        />
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/sideBar_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/horizontal_line"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        tools:layout_width="100dp"
+        tools:layout_height="match_parent"
+        android:layoutDirection="inherit"
+        >
+
+        <TableLayout
+            android:id="@+id/sidebar_tableLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="inherit"
+            tools:layout_width="100dp"
+            tools:layout_height="match_parent"
+            >
+        </TableLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <ir.smartdevelopers.smarttable.views.SmartHorizontalScrollView
+        android:id="@+id/header_holder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/vertical_line"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        tools:layout_width="match_parent"
+        tools:layout_height="80dp"
+        android:layoutDirection="inherit"
+        >
+        <TableLayout
+            android:id="@+id/header_tableLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isScrollContainer="true"
+            tools:layout_width="300dp"
+            tools:layout_height="80dp"
+            android:layoutDirection="inherit"
+            >
+
+            <TableRow android:id="@+id/header_tableRow"
+                tools:layout_width="match_parent"
+                tools:layout_height="80dp"
+                android:layoutDirection="inherit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+
+            </TableRow>
+
+        </TableLayout>
+    </ir.smartdevelopers.smarttable.views.SmartHorizontalScrollView>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/content_vertical_scrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/horizontal_line"
+        android:layout_toEndOf="@id/vertical_line"
+        android:overScrollMode="never"
+        tools:layout_width="match_parent"
+        tools:layout_height="match_parent"
+        android:layoutDirection="inherit"
+        >
+
+        <ir.smartdevelopers.smarttable.views.SmartHorizontalScrollView
+            android:id="@+id/content_horizontal_scrollView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            tools:layout_width="match_parent"
+            tools:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:layoutDirection="inherit"
+            >
+
+            <TableLayout
+                android:id="@+id/content_tableLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:layout_width="match_parent"
+                tools:layout_height="match_parent"
+                android:layoutDirection="inherit"
+                >
+
+
+            </TableLayout>
+        </ir.smartdevelopers.smarttable.views.SmartHorizontalScrollView>
+    </androidx.core.widget.NestedScrollView>
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/smart_table_horizontal_splitter_size"
+        android:background="@color/smart_table_defaultSplittersColor"
+        android:layout_below="@id/table_right_top_corner"
+        android:layout_alignEnd="@id/header_holder"
+        android:layout_alignParentStart="true"
+        tools:background="#494949"
+        />
+    <View
+        android:id="@+id/vertical_line"
+        android:layout_width="@dimen/smart_table_vertical_splitter_size"
+        android:layout_height="wrap_content"
+        android:background="@color/smart_table_defaultSplittersColor"
+        tools:background="#494949"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/sideBar_holder"
+        android:layout_alignBottom="@id/sideBar_holder"
+        />
+</RelativeLayout>

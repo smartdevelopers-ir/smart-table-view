@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="smart_table_image_default_size">50dp</dimen>
+    <dimen name="smart_table_default_text_size">12sp</dimen>
+    <dimen name="smart_table_default_horizontal_divider_height">1dp</dimen>
+    <dimen name="smart_table_default_vertical_divider_width">1dp</dimen>
+    <dimen name="smart_table_default_divider_size">1dp</dimen>
+    <dimen name="smart_table_horizontal_splitter_size">2dp</dimen>
+    <dimen name="smart_table_vertical_splitter_size">1dp</dimen>
+    <dimen name="smart_table_row_splitter_size">1dp</dimen>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public name="smart_table_defaultSidebarItemBackgroundColor" type="color"/>
+    <public name="smart_table_defaultCornerTopBackgroundColor" type="color"/>
+    <public name="smart_table_defaultContentOddRowColor" type="color"/>
+    <public name="smart_table_defaultContentEvenRowColor" type="color"/>
+</resources>

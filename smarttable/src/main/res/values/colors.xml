@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="smart_table_defaultSidebarItemBackgroundColor">#4F81BC</color>
+    <color name="smart_table_defaultHeaderItemBackgroundColor">#4F81BC</color>
+    <color name="smart_table_defaultCornerTopBackgroundColor">#4F81BC</color>
+    <color name="smart_table_defaultContentItemBackgroundColor">#00FFFFFF</color>
+    <color name="smart_table_defaultContentBackgroundColor">#00FFFFFF</color>
+    <color name="smart_table_defaultSidebarBackgroundColor">#00FFFFFF</color>
+    <color name="smart_table_defaultHeaderBackgroundColor">#00FFFFFF</color>
+    <color name="smart_table_defaultHeaderTextColor">#FFFFFF</color>
+    <color name="smart_table_defaultSidebarTextColor">#FFFFFF</color>
+    <color name="smart_table_defaultContentTextColor">#616161</color>
+    <color name="smart_table_defaultContentEvenRowColor">#E9EEF4</color>
+    <color name="smart_table_defaultContentOddRowColor">#D0D7E7</color>
+    <color name="smart_table_defaultSplittersColor">#00FFFFFF</color>
+</resources>
