@@ -97,6 +97,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     /* show and hide sidebar or header*/
     private boolean mShowSidebar = true;
     private boolean mShowHeader = true;
+    /*for fit content to display horizontally*/
+    private boolean mFitHorizontally=false;
 
 
     public SmartTableView(Context context) {
@@ -160,6 +162,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             }
 
             cornerTopRightResourceId = typedArray.getResourceId(R.styleable.SmartTableView_cornerTopRightView, 0);
+            if (cornerTopRightResourceId!=0) {
+                setCornerTopView(cornerTopRightResourceId);
+            }
             /* backgrounds */
             mHeaderBackground = typedArray.getDrawable(R.styleable.SmartTableView_headerBackground);
             if (mHeaderBackground != null)
@@ -176,18 +181,22 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             setShowSidebar(showSidebar);
             boolean showHeader = typedArray.getBoolean(R.styleable.SmartTableView_showHeader, true);
             setShowHeader(showHeader);
+
+            /*fit horizontally*/
+            mFitHorizontally=typedArray.getBoolean(R.styleable.SmartTableView_fitHorizontally,false);
+            setFitHorizontally(mFitHorizontally);
             typedArray.recycle();
         }
 
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (cornerTopRightResourceId != 0) {
-            setCornerTopView(cornerTopRightResourceId);
-        }
-    }
+//    @Override
+//    protected void onAttachedToWindow() {
+//        super.onAttachedToWindow();
+//        if (cornerTopRightResourceId != 0) {
+//            setCornerTopView(cornerTopRightResourceId);
+//        }
+//    }
 
     @SuppressLint("ClickableViewAccessibility")
     private void manageScrollViews() {
@@ -729,6 +738,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             return result;
         }
 
+        if (mFitHorizontally){
+            int start=(int) mHeaderTableRow.getX();
+
+        }
 
         /* if contents is empty just return header width*/
         if (contentItemsSizeList == null || contentItemsSizeList.isEmpty()) {
@@ -897,7 +910,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     public int[] getContentItemPosition(BaseSmartContentItemViewHolder contentItem) {
         int rowCont = mHeaderItemList.size();
         int currentPos = mContentItemList.indexOf(contentItem);
-        int rowPos = (int) (currentPos / rowCont);
+        int rowPos = (currentPos / rowCont);
         int colPos = currentPos % rowCont;
         return new int[]{rowPos, colPos};
     }
@@ -929,9 +942,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         }
         view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        RelativeLayout relativeLayout=new SmartTableView(getContext());
-        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
+        RelativeLayout relativeLayout=new RelativeLayout(getContext());
+        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT));
         relativeLayout.addView(view);
         int deviceWidth = metrics.widthPixels;
         int deviceHeight = metrics.heightPixels;
@@ -1239,6 +1252,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         cornerTopRightContainer.addView(cornerTopRightView);
 
     }
+    /** Sets the header and content to fit hole table width*/
+    public void setFitHorizontally(boolean fitHorizontally){
+        if (fitHorizontally){
+
+        }else {
+
+        }
+    }
     /**
      * Set background color for corner view ,corner view is a view that located above sidebar and beside header
      * @param color color int of a color
@@ -1259,6 +1280,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
      * */
     public void setCornerTopBackgroundDrawable(Drawable drawable) {
         cornerTopRightContainer.setBackground(drawable);
+    }
+
+    public void setCornerTopViewClickListener(OnClickListener clickListener){
+        cornerTopRightContainer.setOnClickListener(clickListener);
     }
     /**
      * Returns the header background drawable set by {@link #setHeaderBackground(Drawable)}

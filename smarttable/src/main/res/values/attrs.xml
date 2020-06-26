@@ -74,6 +74,7 @@
         <attr name="contentBackground" format="color|reference"/>
         <attr name="showSidebar" format="boolean|reference"/>
         <attr name="showHeader" format="boolean|reference"/>
+        <attr name="fitHorizontally" format="boolean|reference"/>
         <attr name="android:layoutDirection"/>
     </declare-styleable>
 </resources>
