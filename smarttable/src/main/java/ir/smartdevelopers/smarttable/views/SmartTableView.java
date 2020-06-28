@@ -99,6 +99,12 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     private boolean mShowHeader = true;
     /*for fit content to display horizontally*/
     private boolean mFitHorizontally=false;
+    /*if true header items width matches to content width*/
+    private boolean mStretchHeaderToContentWidth;
+    /*if true content items width matches to header width*/
+    private boolean mStretchContentToHeaderWidth;
+    /*if true fit all width of headers or contents to max width*/
+    private boolean mFitToMaxWidth=false;
 
 
     public SmartTableView(Context context) {
@@ -110,6 +116,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         super(context, attrs);
         init(context, attrs);
     }
+
+
 
     private void init(Context context, AttributeSet attrs) {
 
@@ -185,12 +193,22 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             /*fit horizontally*/
             mFitHorizontally=typedArray.getBoolean(R.styleable.SmartTableView_fitHorizontally,false);
             setFitHorizontally(mFitHorizontally);
+            /*stretch content width to header width */
+            mStretchContentToHeaderWidth=typedArray.getBoolean(R.styleable.SmartTableView_stretchContentWidthToHeaderWidth,false);
+            setStretchContentToHeaderWidth(mStretchContentToHeaderWidth);
+            /*stretch header width to content width */
+            mStretchHeaderToContentWidth=typedArray.getBoolean(R.styleable.SmartTableView_stretchHeaderWidthToContentWidth,false);
+            setStretchHeaderToContentWidth(mStretchHeaderToContentWidth);
+            /*fit all content width to max of columns*/
+            mFitToMaxWidth=typedArray.getBoolean(R.styleable.SmartTableView_fitAllWidthToMaxOfColumnWidth,false);
+            setFitToMaxWidth(mFitToMaxWidth);
             typedArray.recycle();
         }
 
     }
 
-//    @Override
+
+    //    @Override
 //    protected void onAttachedToWindow() {
 //        super.onAttachedToWindow();
 //        if (cornerTopRightResourceId != 0) {
@@ -410,6 +428,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         /* remove all childes to add dividers between childes*/
         mHeaderTableRow.removeAllViews();
 
+        int maxWidthOfColumns=0;
+        if (mFitToMaxWidth){
+             maxWidthOfColumns=Collections.max(maxColumnsWidthList);
+        }
         for (int col = 0; col < size; col++) {
             final BaseSmartHeaderItemViewHolder headerViewHolder = mHeaderItemList.get(col);
 
@@ -417,8 +439,22 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             int maxHeight = getMaxHeight(mHeaderItemsSize);
             /* set max height to all header items*/
             headerViewHolder.setLayoutHeight(maxHeight);
-            /* set max width to headerViewHolder*/
-            headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+
+            /*if fit horizontally is true set average of width to the header*/
+            if(mFitHorizontally){
+               int averageWidth=getContentAverageWidth(size);
+                headerViewHolder.setLayoutWidth(averageWidth);
+            }else {
+                if (mFitToMaxWidth){
+                    /*set max of columns width to the all header*/
+                    headerViewHolder.setLayoutWidth(maxWidthOfColumns);
+                }else {
+                    /* set max width of current column to headerViewHolder*/
+                    headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+                }
+            }
+
+
             View headerView=headerViewHolder.getItemView();
             /* add click listener*/
             final int headerFinalPos = col;
@@ -464,6 +500,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         }
     }
 
+    private int getContentAverageWidth(int count) {
+
+        int deviceWidth=getResources().getDisplayMetrics().widthPixels;
+        int sidebarWidth=getMaxWidth(mSidebarItemsSize);
+
+        return ((deviceWidth-sidebarWidth)-(count*verticalDividerWidth))/count;
+    }
+
     /*
      * this method called after setHeader and fill content
      * the content must be the same size of its header column and its sidebar row
@@ -478,6 +522,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         mContentTableLayout.removeAllViewsInLayout();
 
         int index = 0;
+        int maxWidthOfColumns=0;
+        if (mFitToMaxWidth) {
+            maxWidthOfColumns=Collections.max(maxColumnsWidthList);
+        }
         for (int row = 0; row < numOfSidebarItem; row++) {
             TableRow tableRow = (TableRow) mContentItemList.get(index)
                     .getParent();
@@ -497,7 +545,20 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                 int maxWidth = maxColumnsWidthList.get(col);
                 /* set max size  to contents*/
                 contentViewHolder.setLayoutHeight(maxHeight);
-                contentViewHolder.setLayoutWidth(maxWidth);
+
+                /*if fit horizontally is true set average width to content*/
+                if (mFitHorizontally){
+                    int averageWidth=getContentAverageWidth(numOfHeaderItem);
+                    contentViewHolder.setLayoutWidth(averageWidth);
+                }else {
+                    if (mFitToMaxWidth){
+                        /*set max of columns width to the all contents*/
+                        contentViewHolder.setLayoutWidth(maxWidthOfColumns);
+                    }else {
+                        /*if fit horizontally is false set max width to content*/
+                        contentViewHolder.setLayoutWidth(maxWidth);
+                    }
+                }
 
                 /* add contentViewHolder to table row*/
                 View contentView = contentViewHolder.getItemView();
@@ -738,13 +799,13 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             return result;
         }
 
-        if (mFitHorizontally){
-            int start=(int) mHeaderTableRow.getX();
 
-        }
 
-        /* if contents is empty just return header width*/
-        if (contentItemsSizeList == null || contentItemsSizeList.isEmpty()) {
+        /* if contents is empty just return header width
+        * or
+        *if should stretch to header width return header width
+        */
+        if (contentItemsSizeList == null || contentItemsSizeList.isEmpty() || mStretchContentToHeaderWidth) {
             for (int i = 0; i < headerItemsSizeList.size(); i++) {
                 int headerWidth = headerItemsSizeList.get(i).first;
                 result.add(headerWidth);
@@ -771,8 +832,11 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             int colPos = i % columnCount;
             cols.get(colPos).add(contentItemsSizeList.get(i));
         }
-        /* if header is empty just return contents width*/
-        if (headerItemsSizeList == null || headerItemsSizeList.isEmpty()) {
+        /* if header is empty just return contents width
+        * or
+        * if should stretch to content width return content width
+        */
+        if (headerItemsSizeList == null || headerItemsSizeList.isEmpty() || mStretchHeaderToContentWidth) {
             for (int i = 0; i < cols.size(); i++) {
                 int maxFromColsWidth = (Collections.max(cols.get(i), widthComparator)).first;
                 result.add(maxFromColsWidth);
@@ -1254,11 +1318,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     }
     /** Sets the header and content to fit hole table width*/
     public void setFitHorizontally(boolean fitHorizontally){
-        if (fitHorizontally){
-
-        }else {
-
-        }
+        mFitHorizontally=fitHorizontally;
     }
     /**
      * Set background color for corner view ,corner view is a view that located above sidebar and beside header
@@ -1285,6 +1345,11 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     public void setCornerTopViewClickListener(OnClickListener clickListener){
         cornerTopRightContainer.setOnClickListener(clickListener);
     }
+
+    /**if you want to fit all contents or headers to max width of them width set true*/
+    public void setFitToMaxWidth(boolean fitToMaxWidth) {
+        mFitToMaxWidth = fitToMaxWidth;
+    }
     /**
      * Returns the header background drawable set by {@link #setHeaderBackground(Drawable)}
      * */
@@ -1299,6 +1364,15 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         headerScrollView.setBackground(headerBackground);
         setCornerTopBackgroundDrawable(headerBackground);
     }
+    /** if you want to stretch content items width to header width set true else set false*/
+    public void setStretchContentToHeaderWidth(boolean stretchContentToHeaderWidth) {
+        mStretchContentToHeaderWidth = stretchContentToHeaderWidth;
+    }
+    /** if you want to stretch header items width to content width set true else set false*/
+    public void setStretchHeaderToContentWidth(boolean stretchHeaderToContentWidth) {
+        mStretchHeaderToContentWidth = stretchHeaderToContentWidth;
+    }
+
     /**
      * Returns the sidebar background drawable set by {@link #setSidebarBackground(Drawable)}
      * */
