@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -40,7 +41,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     private SmartHorizontalScrollView headerScrollView, contentHorizontalScrollView;
 
     private RelativeLayout root;
-    private TableLayout mSidebarTableLayout;
+    private LinearLayout mSidebarTableLayout;
     private TableLayout mContentTableLayout;
     private TableRow mHeaderTableRow;
     private Drawable mSidebarItemBackgroundDrawable, mHeaderItemBackgroundDrawable;
@@ -639,6 +640,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                 tableRow = (TableRow) parent;
             } else {
                 tableRow = new TableRow(getContext());
+                tableRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        TableLayout.LayoutParams.WRAP_CONTENT));
             }
             /*
              *generate BaseSmartSidebarItem from adapter by calling

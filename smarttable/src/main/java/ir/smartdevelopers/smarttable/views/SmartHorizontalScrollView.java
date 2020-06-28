@@ -67,9 +67,10 @@ public class SmartHorizontalScrollView extends HorizontalScrollView {
                  */
                 if (endScrollX==0 || (currentScrollX==endScrollX)) {
                     fullScroll(FOCUS_RIGHT);
-                    endScrollX =getScrollX();
+
                 }
             }
+            endScrollX =getScrollX();
         }
 
     }
