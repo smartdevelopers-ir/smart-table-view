@@ -75,6 +75,10 @@
         <attr name="showSidebar" format="boolean|reference"/>
         <attr name="showHeader" format="boolean|reference"/>
         <attr name="fitHorizontally" format="boolean|reference"/>
+        <attr name="fitAllWidthToMaxOfColumnWidth" format="boolean|reference"/>
+        <attr name="stretchIfContentNotFitScreen" format="boolean|reference"/>
+        <attr name="stretchHeaderWidthToContentWidth" format="boolean|reference"/>
+        <attr name="stretchContentWidthToHeaderWidth" format="boolean|reference"/>
         <attr name="android:layoutDirection"/>
     </declare-styleable>
 </resources>

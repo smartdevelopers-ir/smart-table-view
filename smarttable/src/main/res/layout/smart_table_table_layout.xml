@@ -27,15 +27,16 @@
         android:layoutDirection="inherit"
         >
 
-        <TableLayout
+        <LinearLayout
             android:id="@+id/sidebar_tableLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layoutDirection="inherit"
             tools:layout_width="100dp"
-            tools:layout_height="match_parent"
+            tools:layout_height="wrap_content"
+            android:orientation="vertical"
             >
-        </TableLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
     <ir.smartdevelopers.smarttable.views.SmartHorizontalScrollView

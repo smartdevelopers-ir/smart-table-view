@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.4"
         setProperty("archivesBaseName","smart-table-view")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -84,7 +84,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'ir.smartdevelopers'
                 artifactId = 'smart-table-view'
-                version = '1.0'
+                version = '1.4'
                 pom {
                     name = 'smart-table-view'
                     description = 'Create table in android easily'
@@ -117,7 +117,7 @@ afterEvaluate {
 
                 groupId = 'ir.smartdevelopers'
                 artifactId = 'smart-table-view-debug'
-                version = '1.0'
+                version = '1.4'
             }
         }
         repositories {
@@ -134,7 +134,7 @@ afterEvaluate {
 
 
 group = 'ir.smartdevelopers'
-version = '1.0'
+version = '1.4'
 
 //java {
 //    withJavadocJar()
@@ -206,7 +206,7 @@ task sourcesJar(type: Jar) {
 }
 task javadocJar2(type: Jar) {
     archiveClassifier.set( 'javadoc')
-    from "C:\\Users\\Mostafa\\Desktop\\Smart Table\\final\\javadoc"
+    from android.sourceSets.main.java.srcDirs
 }
 artifacts {
     archives sourcesJar

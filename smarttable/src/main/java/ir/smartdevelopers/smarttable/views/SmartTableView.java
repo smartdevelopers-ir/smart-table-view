@@ -106,6 +106,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     private boolean mStretchContentToHeaderWidth;
     /*if true fit all width of headers or contents to max width*/
     private boolean mFitToMaxWidth=false;
+    /*if content not fill screen stretch other content to fit screen*/
+    private boolean mStretchIfContentNotFitScreen;
 
 
     public SmartTableView(Context context) {
@@ -203,6 +205,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             /*fit all content width to max of columns*/
             mFitToMaxWidth=typedArray.getBoolean(R.styleable.SmartTableView_fitAllWidthToMaxOfColumnWidth,false);
             setFitToMaxWidth(mFitToMaxWidth);
+
+            mStretchIfContentNotFitScreen=typedArray.getBoolean(R.styleable.SmartTableView_stretchIfContentNotFitScreen,false);
+            setStretchIfContentNotFitScreen(mStretchIfContentNotFitScreen);
             typedArray.recycle();
         }
 
@@ -433,6 +438,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         if (mFitToMaxWidth){
              maxWidthOfColumns=Collections.max(maxColumnsWidthList);
         }
+        int stretchedWidth=0;
+        if (mStretchIfContentNotFitScreen) {
+             stretchedWidth = calculateWidthToFitScreen();
+        }
+        int averageWidth=0;
+        if (mFitHorizontally){
+             averageWidth=getContentAverageWidth(size);
+        }
         for (int col = 0; col < size; col++) {
             final BaseSmartHeaderItemViewHolder headerViewHolder = mHeaderItemList.get(col);
 
@@ -443,13 +456,22 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
             /*if fit horizontally is true set average of width to the header*/
             if(mFitHorizontally){
-               int averageWidth=getContentAverageWidth(size);
+
                 headerViewHolder.setLayoutWidth(averageWidth);
             }else {
                 if (mFitToMaxWidth){
                     /*set max of columns width to the all header*/
                     headerViewHolder.setLayoutWidth(maxWidthOfColumns);
-                }else {
+                }else if(mStretchIfContentNotFitScreen && stretchedWidth!=-2){
+
+                    if (!mStretchToFitDeletedPosition.contains(col)){
+                        headerViewHolder.setLayoutWidth(stretchedWidth);
+                    }else {
+                        headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+                    }
+                }
+
+                else {
                     /* set max width of current column to headerViewHolder*/
                     headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
                 }
@@ -527,6 +549,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         if (mFitToMaxWidth) {
             maxWidthOfColumns=Collections.max(maxColumnsWidthList);
         }
+        int stretchedWidth=0;
+        if (mStretchIfContentNotFitScreen){
+            stretchedWidth=calculateWidthToFitScreen();
+        }
+        int averageWidth=0;
+        if (mFitHorizontally){
+             averageWidth=getContentAverageWidth(numOfHeaderItem);
+        }
         for (int row = 0; row < numOfSidebarItem; row++) {
             TableRow tableRow = (TableRow) mContentItemList.get(index)
                     .getParent();
@@ -549,13 +579,22 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
                 /*if fit horizontally is true set average width to content*/
                 if (mFitHorizontally){
-                    int averageWidth=getContentAverageWidth(numOfHeaderItem);
+
                     contentViewHolder.setLayoutWidth(averageWidth);
                 }else {
                     if (mFitToMaxWidth){
                         /*set max of columns width to the all contents*/
                         contentViewHolder.setLayoutWidth(maxWidthOfColumns);
-                    }else {
+                    }else if(mStretchIfContentNotFitScreen && stretchedWidth!=-2){
+
+                        if (!mStretchToFitDeletedPosition.contains(col)){
+                            contentViewHolder.setLayoutWidth(stretchedWidth);
+                        }else {
+                            contentViewHolder.setLayoutWidth(maxWidth);
+                        }
+                    }
+
+                    else {
                         /*if fit horizontally is false set max width to content*/
                         contentViewHolder.setLayoutWidth(maxWidth);
                     }
@@ -1045,7 +1084,52 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         return maxPair.second;
     }
 
+    private int calculateWidthToFitScreen(){
+        int sidebarWidth=getMaxWidth(mSidebarItemsSize);
+        int deviceWidth=getResources().getDisplayMetrics().widthPixels;
+        int paddingSize=mHeaderItemsSize.size()*verticalDividerWidth;
+        int[] contentSize ={deviceWidth-sidebarWidth-paddingSize};
 
+        List<Integer> sizeTemp=new ArrayList<>(maxColumnsWidthList);
+        int sum=0;
+        for (Integer i:sizeTemp){
+            sum+=i;
+        }
+            if (contentSize[0]<sum){
+                return -2;
+            }
+
+        int finalCellSize=-2;
+        while (finalCellSize==-2){
+            finalCellSize=canSetSumToMaxWidth(sizeTemp,contentSize);
+        }
+
+        return finalCellSize;
+    }
+    private int canSetSumToMaxWidth(List<Integer> sizeTemp,int[] contentSize){
+        Integer max= Collections.max(sizeTemp);
+        Integer min=Collections.min(sizeTemp);
+        if (min.equals(max)){
+            return getContentAverageWidth(sizeTemp.size());
+        }
+        int leftOverSize=contentSize[0]-max;
+        int maxPos=sizeTemp.indexOf(max);
+        mStretchToFitDeletedPosition.add(maxPos);
+        sizeTemp.remove(max);
+        int cellSize=leftOverSize/sizeTemp.size();
+        for (Integer w:sizeTemp){
+            if (cellSize<w){
+                /*calculate again*/
+                contentSize[0]=leftOverSize;
+//                canSetSumToMaxWidth(sizeTemp,leftOverSize,finalSellSize);
+                return -2;
+
+            }
+        }
+        return cellSize;
+    }
+    /*for excluding to swt width*/
+    private List<Integer> mStretchToFitDeletedPosition=new ArrayList<>();
     /*
      * Setters and Getters
      * */
@@ -1187,6 +1271,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     private boolean contentIsShowing() {
         return contentVerticalScrollView.getVisibility() == VISIBLE;
+    }
+
+    public void setStretchIfContentNotFitScreen(boolean stretchIfContentNotFitScreen) {
+        mStretchIfContentNotFitScreen = stretchIfContentNotFitScreen;
     }
 
     /**
