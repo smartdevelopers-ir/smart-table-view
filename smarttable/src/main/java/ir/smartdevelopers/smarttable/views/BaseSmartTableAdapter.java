@@ -31,6 +31,18 @@ public abstract class BaseSmartTableAdapter<SVH extends BaseSmartSidebarItemView
         mNotifyObserver.notifyDataSetChanged();
     }
 
+    public void notifyContentItemChanged(int adapterPosition){
+        mNotifyObserver.notifyContentItemChanged(adapterPosition);
+    };
+    public void notifyContentItemChanged(int rowPosition,int columnPosition){
+        mNotifyObserver.notifyContentItemChanged(rowPosition,columnPosition);
+    };
+    public void notifyHeaderItemChanged(int position){
+        mNotifyObserver.notifyHeaderItemChanged(position);
+    };
+    public void notifySidebarItemChanged(int position){
+        mNotifyObserver.notifySidebarItemChanged(position);
+    };
     /**
      * Some times you want to change hole content row background .At this time you must override this method
      * and return a drawable as background you want

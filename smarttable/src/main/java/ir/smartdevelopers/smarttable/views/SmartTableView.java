@@ -78,8 +78,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     private boolean sidebarIsScrolling, headerIsScrolling, contentIsScrolling = false;
 
     /* dividers */
-    private Drawable mHorizontalDivider;
-    private Drawable mVerticalDivider;
+    private Drawable mHorizontalContentDivider;
+    private Drawable mVerticalContentDivider;
+    private Drawable mHorizontalSidebarDivider;
+    private Drawable mVerticalHeaderDivider;
     private int horizontalDividerHeight;
     private int verticalDividerWidth;
     /* table splitter*/
@@ -405,8 +407,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                     horizontalDivider.setLayoutParams(new TableRow.
                             LayoutParams(maxWidth, horizontalDividerHeight
                     ));
-                    if (mHorizontalDivider != null) {
-                        horizontalDivider.setBackground(mHorizontalDivider);
+                    if (mHorizontalSidebarDivider != null) {
+                        horizontalDivider.setBackground(mHorizontalSidebarDivider);
                     }
                     mSidebarTableLayout.addView(horizontalDivider);
                 }
@@ -436,6 +438,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
         int maxWidthOfColumns=0;
         if (mFitToMaxWidth){
+            if (maxColumnsWidthList!=null && maxColumnsWidthList.size()>0)
              maxWidthOfColumns=Collections.max(maxColumnsWidthList);
         }
         int stretchedWidth=0;
@@ -514,8 +517,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                     View verticalDivider = new View(getContext());
                     verticalDivider.setLayoutParams(new TableRow.
                             LayoutParams(verticalDividerWidth, maxHeight));
-                    if (mVerticalDivider != null) {
-                        verticalDivider.setBackground(mVerticalDivider);
+                    if (mVerticalHeaderDivider != null) {
+                        verticalDivider.setBackground(mVerticalHeaderDivider);
                     }
                     mHeaderTableRow.addView(verticalDivider);
                 }
@@ -525,6 +528,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     private int getContentAverageWidth(int count) {
 
+        if (count==0){return 0;}
         int deviceWidth=getResources().getDisplayMetrics().widthPixels;
         int sidebarWidth=getMaxWidth(mSidebarItemsSize);
 
@@ -547,6 +551,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         int index = 0;
         int maxWidthOfColumns=0;
         if (mFitToMaxWidth) {
+            if (maxColumnsWidthList!=null && maxColumnsWidthList.size()>0)
             maxWidthOfColumns=Collections.max(maxColumnsWidthList);
         }
         int stretchedWidth=0;
@@ -638,8 +643,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                         View verticalDivider = new View(getContext());
                         verticalDivider.setLayoutParams(new TableRow.
                                 LayoutParams(verticalDividerWidth, maxHeight));
-                        if (mVerticalDivider != null) {
-                            verticalDivider.setBackground(mVerticalDivider);
+                        if (mVerticalContentDivider != null) {
+                            verticalDivider.setBackground(mVerticalContentDivider);
                         }
 
                         tableRow.addView(verticalDivider);
@@ -656,8 +661,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                 horizontalDivider.setLayoutParams(new TableLayout.
                         LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, horizontalDividerHeight
                 ));
-                if (mHorizontalDivider != null) {
-                    horizontalDivider.setBackground(mHorizontalDivider);
+                if (mHorizontalContentDivider != null) {
+                    horizontalDivider.setBackground(mHorizontalContentDivider);
                 }
                 mContentTableLayout.addView(horizontalDivider);
             }
@@ -1038,6 +1043,56 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     }
 
+    @Override
+    public void notifyContentItemChanged(int adapterPosition) {
+        if (mContentItemList==null ){
+            throw new RuntimeException("you dose not have content in table");
+        }
+        if (mContentItemList.size()<adapterPosition) {
+            throw new IndexOutOfBoundsException("adapterPosition that you pass is "+adapterPosition + " but content size is : "+mContentItemList.size());
+        }
+        int rowCount=mSideBarItemList.size();
+        int colCount=mHeaderItemList.size();
+        int rowPos=adapterPosition/colCount;
+        int colPos=adapterPosition%colCount;
+        mSmartTableAdapter.onBindContentViewHolder(mContentItemList.get(adapterPosition),rowPos,colPos);
+    }
+
+    @Override
+    public void notifyContentItemChanged(int rowPosition, int columnPosition) {
+        int colCount=mHeaderItemList.size();
+        int adapterPosition=rowPosition*colCount+columnPosition;
+        if (mContentItemList==null ){
+            throw new RuntimeException("you dose not have content in table");
+        }
+        if (mContentItemList.size()<adapterPosition) {
+            throw new IndexOutOfBoundsException("adapterPosition that you pass is "+adapterPosition + " but content size is : "+mContentItemList.size());
+        }
+        mSmartTableAdapter.onBindContentViewHolder(mContentItemList.get(adapterPosition),rowPosition,columnPosition);
+    }
+
+    @Override
+    public void notifyHeaderItemChanged(int position) {
+        if (mHeaderItemList==null ){
+            throw new RuntimeException("you dose not have header in table");
+        }
+        if (mHeaderItemList.size()<position) {
+            throw new IndexOutOfBoundsException("position that you pass is "+position + " but header size is : "+mHeaderItemList.size());
+        }
+        mSmartTableAdapter.onBindHeaderViewHolder(mHeaderItemList.get(position),position);
+    }
+
+    @Override
+    public void notifySidebarItemChanged(int position) {
+        if (mSideBarItemList==null ){
+            throw new RuntimeException("you dose not have sidebar in table");
+        }
+        if (mSideBarItemList.size()<position) {
+            throw new IndexOutOfBoundsException("position that you pass is "+position + " but sidebar size is : "+mSideBarItemList.size());
+        }
+        mSmartTableAdapter.onBindSidebarViewHolder(mSideBarItemList.get(position),position);
+    }
+
     /*
      * measure size of view before render it
      * */
@@ -1065,6 +1120,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     }
 
     private int getMaxWidth(List<Pair<Integer, Integer>> pairs) {
+        if(pairs==null || pairs.size()==0){
+            return 0;
+        }
         Pair<Integer, Integer> maxPair = Collections.max(pairs, new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
@@ -1075,6 +1133,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     }
 
     private int getMaxHeight(List<Pair<Integer, Integer>> pairs) {
+        if(pairs==null || pairs.size()==0){
+            return 0;
+        }
         Pair<Integer, Integer> maxPair = Collections.max(pairs, new Comparator<Pair<Integer, Integer>>() {
             @Override
             public int compare(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
@@ -1089,8 +1150,11 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         int deviceWidth=getResources().getDisplayMetrics().widthPixels;
         int paddingSize=mHeaderItemsSize.size()*verticalDividerWidth;
         int[] contentSize ={deviceWidth-sidebarWidth-paddingSize};
-
+        mStretchToFitDeletedPosition.clear();
         List<Integer> sizeTemp=new ArrayList<>(maxColumnsWidthList);
+        if ( sizeTemp.size()==0){
+            return 0;
+        }
         int sum=0;
         for (Integer i:sizeTemp){
             sum+=i;
@@ -1107,6 +1171,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         return finalCellSize;
     }
     private int canSetSumToMaxWidth(List<Integer> sizeTemp,int[] contentSize){
+        if (sizeTemp==null || sizeTemp.size()==0){
+            return 0;
+        }
+
         Integer max= Collections.max(sizeTemp);
         Integer min=Collections.min(sizeTemp);
         if (min.equals(max)){
@@ -1312,28 +1380,28 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         return cornerTopRightView;
     }
     /**
-     * Returns the Drawable set by {@link #setHorizontalDivider(Drawable)}
+     * Returns the Drawable set by {@link #setHorizontalContentDivider(Drawable)}
      * */
-    public Drawable getHorizontalDivider() {
-        return mHorizontalDivider;
+    public Drawable getHorizontalContentDivider() {
+        return mHorizontalContentDivider;
     }
     /**
      * Set a Drawable for horizontal divider of every cell
      * */
-    public void setHorizontalDivider(Drawable horizontalDivider) {
-        mHorizontalDivider = horizontalDivider;
+    public void setHorizontalContentDivider(Drawable horizontalContentDivider) {
+        mHorizontalContentDivider = horizontalContentDivider;
     }
     /**
-     * Returns the Drawable set by {@link #setVerticalDivider(Drawable)}
+     * Returns the Drawable set by {@link #setVerticalContentDivider(Drawable)}
      * */
-    public Drawable getVerticalDivider() {
-        return mVerticalDivider;
+    public Drawable getVerticalContentDivider() {
+        return mVerticalContentDivider;
     }
     /**
      * Set a Drawable for vertical divider of every cell
      * */
-    public void setVerticalDivider(Drawable drawable) {
-        mVerticalDivider = drawable;
+    public void setVerticalContentDivider(Drawable drawable) {
+        mVerticalContentDivider = drawable;
     }
     /**
      * Set a height of horizontal divider in pixel
@@ -1505,5 +1573,21 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     public int getVerticalTableSplitterWidth() {
         return verticalTableSplitterWidth;
+    }
+
+    public Drawable getHorizontalSidebarDivider() {
+        return mHorizontalSidebarDivider;
+    }
+
+    public void setHorizontalSidebarDivider(Drawable horizontalSidebarDivider) {
+        mHorizontalSidebarDivider = horizontalSidebarDivider;
+    }
+
+    public Drawable getVerticalHeaderDivider() {
+        return mVerticalHeaderDivider;
+    }
+
+    public void setVerticalHeaderDivider(Drawable verticalHeaderDivider) {
+        mVerticalHeaderDivider = verticalHeaderDivider;
     }
 }
