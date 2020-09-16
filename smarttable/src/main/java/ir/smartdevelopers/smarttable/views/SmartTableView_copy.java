@@ -36,7 +36,7 @@ import ir.smartdevelopers.smarttable.views.listeners.OnHeaderItemLongClickListen
 import ir.smartdevelopers.smarttable.views.listeners.OnSidebarItemClickListener;
 import ir.smartdevelopers.smarttable.views.listeners.OnSidebarItemLongClickListener;
 
-public class SmartTableView extends RelativeLayout implements NotifyObserver {
+public class SmartTableView_copy extends RelativeLayout implements NotifyObserver {
     private NestedScrollView sidebarScrollView, contentVerticalScrollView;
     private SmartHorizontalScrollView headerScrollView, contentHorizontalScrollView;
 
@@ -112,12 +112,12 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
     private boolean mStretchIfContentNotFitScreen;
 
 
-    public SmartTableView(Context context) {
+    public SmartTableView_copy(Context context) {
         super(context);
         init(context, null);
     }
 
-    public SmartTableView(Context context, AttributeSet attrs) {
+    public SmartTableView_copy(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
@@ -1113,7 +1113,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         RelativeLayout relativeLayout=new RelativeLayout(getContext());
-        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+        relativeLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT));
         relativeLayout.addView(view);
         int deviceWidth = metrics.widthPixels;

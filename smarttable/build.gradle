@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-//apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -13,7 +11,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 29
         versionCode 12
-        versionName "2.1"
+        versionName "2.3"
         setProperty("archivesBaseName","smart-table-view")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -134,7 +132,7 @@ afterEvaluate {
 
 
 group = 'ir.smartdevelopers'
-version = '2.1'
+version = '2.3'
 
 //java {
 //    withJavadocJar()

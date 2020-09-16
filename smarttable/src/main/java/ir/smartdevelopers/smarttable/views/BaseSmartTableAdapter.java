@@ -3,6 +3,9 @@ package ir.smartdevelopers.smarttable.views;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public abstract class BaseSmartTableAdapter<SVH extends BaseSmartSidebarItemViewHolder,
         HVH extends BaseSmartHeaderItemViewHolder,
         CVH extends BaseSmartContentItemViewHolder> {
@@ -13,8 +16,11 @@ public abstract class BaseSmartTableAdapter<SVH extends BaseSmartSidebarItemView
     public abstract int getColumnCount();
     public abstract int getContentItemCount();
 
+    @Nullable
     protected abstract SVH onCreateSidebarViewHolder( ViewGroup parent);
+    @Nullable
     protected abstract HVH onCreateHeaderViewHolder( ViewGroup parent);
+    @NonNull
     protected abstract CVH onCreateContentViewHolder( ViewGroup parent);
 
     public abstract void onBindSidebarViewHolder(SVH sidebarHolder,
