@@ -4,7 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -13,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -21,6 +27,9 @@ import android.widget.TableRow;
 import androidx.annotation.ColorInt;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Px;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.os.TraceCompat;
 import androidx.core.widget.NestedScrollView;
 
 import java.util.ArrayList;
@@ -36,14 +45,15 @@ import ir.smartdevelopers.smarttable.views.listeners.OnHeaderItemLongClickListen
 import ir.smartdevelopers.smarttable.views.listeners.OnSidebarItemClickListener;
 import ir.smartdevelopers.smarttable.views.listeners.OnSidebarItemLongClickListener;
 
-public class SmartTableView extends RelativeLayout implements NotifyObserver {
+public class SmartTableView extends ConstraintLayout implements NotifyObserver {
     private NestedScrollView sidebarScrollView, contentVerticalScrollView;
     private SmartHorizontalScrollView headerScrollView, contentHorizontalScrollView;
 
-    private RelativeLayout root;
+//    private RelativeLayout root;
     private LinearLayout mSidebarTableLayout;
-    private TableLayout mContentTableLayout;
-    private TableRow mHeaderTableRow;
+//    private TableLayout mContentTableLayout;
+    private SmartTableLayout mContentTableLayout;
+    private LinearLayout mHeaderTableRow;
     private Drawable mSidebarItemBackgroundDrawable, mHeaderItemBackgroundDrawable;
     private Drawable mContentItemBackgroundDrawable;
     /* corner top right view */
@@ -134,7 +144,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         cornerTopRightContainer = findViewById(R.id.table_right_top_corner);
         mSidebarTableLayout = findViewById(R.id.sidebar_tableLayout);
         mContentTableLayout = findViewById(R.id.content_tableLayout);
-        root = findViewById(R.id.table_root);
+//        root = findViewById(R.id.table_root);
         mHeaderTableRow = findViewById(R.id.header_tableRow);
         mHorizontalTableSplitterView = findViewById(R.id.horizontal_line);
         mVerticalTableSplitterView = findViewById(R.id.vertical_line);
@@ -148,17 +158,17 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SmartTableView);
 
             /* layout sizes*/
-            int layoutWidth = typedArray.getLayoutDimension(R.styleable.SmartTableView_android_layout_width,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            setLayoutWidth(layoutWidth);
-            int layoutHeight = typedArray.getLayoutDimension(R.styleable.SmartTableView_android_layout_height,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            setLayoutHeight(layoutHeight);
+//            int layoutWidth = typedArray.getLayoutDimension(R.styleable.SmartTableView_android_layout_width,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT);
+//            setLayoutWidth(layoutWidth);
+//            int layoutHeight = typedArray.getLayoutDimension(R.styleable.SmartTableView_android_layout_height,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT);
+//            setLayoutHeight(layoutHeight);
 
-            horizontalDividerHeight = typedArray.getDimensionPixelSize(R.styleable.SmartTableView_sidebarItemBottomMargin,
-                    getResources().getDimensionPixelSize(R.dimen.smart_table_default_horizontal_divider_height));
-            verticalDividerWidth = typedArray.getDimensionPixelSize(R.styleable.SmartTableView_headerBetweenItemMargin,
-                    getResources().getDimensionPixelSize(R.dimen.smart_table_default_vertical_divider_width));
+//            horizontalDividerHeight = typedArray.getDimensionPixelSize(R.styleable.SmartTableView_sidebarItemBottomMargin,
+//                    getResources().getDimensionPixelSize(R.dimen.smart_table_default_horizontal_divider_height));
+//            verticalDividerWidth = typedArray.getDimensionPixelSize(R.styleable.SmartTableView_headerBetweenItemMargin,
+//                    getResources().getDimensionPixelSize(R.dimen.smart_table_default_vertical_divider_width));
 
             /* get sidebar item background from xml attribute*/
             mSidebarItemBackgroundDrawable = typedArray.getDrawable(R.styleable.SmartTableView_sidebarItemBackground);
@@ -210,6 +220,34 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
             mStretchIfContentNotFitScreen=typedArray.getBoolean(R.styleable.SmartTableView_stretchIfContentNotFitScreen,false);
             setStretchIfContentNotFitScreen(mStretchIfContentNotFitScreen);
+
+            mHorizontalContentDivider=typedArray.getDrawable(R.styleable.SmartTableView_contentHorizontalDivider);
+            mVerticalContentDivider=typedArray.getDrawable(R.styleable.SmartTableView_contentVerticalDivider);
+            mVerticalHeaderDivider=typedArray.getDrawable(R.styleable.SmartTableView_headerDivider);
+            mHorizontalSidebarDivider=typedArray.getDrawable(R.styleable.SmartTableView_sidebarDivider);
+
+            boolean showDefaultDividers=typedArray.getBoolean(R.styleable.SmartTableView_showDefaultDividers,true);
+            if (showDefaultDividers){
+                Drawable divider= ContextCompat.getDrawable(context,R.drawable.horizontal_divider_default);
+                if (mHorizontalContentDivider==null){
+                    mHorizontalContentDivider=divider;
+                }
+                if (mVerticalContentDivider==null){
+                    mVerticalContentDivider=divider;
+                }
+                if (mVerticalHeaderDivider==null){
+                    mVerticalHeaderDivider=divider;
+                }
+                if (mHorizontalSidebarDivider==null){
+                    mHorizontalSidebarDivider=divider;
+                }
+            }
+            if (mHorizontalContentDivider != null) {
+                horizontalDividerHeight = mHorizontalContentDivider.getIntrinsicHeight();
+            }
+            if (mVerticalContentDivider != null) {
+                verticalDividerWidth = mVerticalContentDivider.getIntrinsicWidth();
+            }
             typedArray.recycle();
         }
 
@@ -351,7 +389,11 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
         int size = adapter.getRowCount();
         mSidebarTableLayout.removeAllViewsInLayout();
-
+        /* set horizontal divider */
+        if (mHorizontalSidebarDivider!=null){
+            mSidebarTableLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE );
+            mSidebarTableLayout.setDividerDrawable(mHorizontalSidebarDivider);
+        }
         for (int row = 0; row < size; row++) {
             final BaseSmartSidebarItemViewHolder sidebarViewHolder = mSideBarItemList.get(row);
             TableRow tableRow = (TableRow) sidebarViewHolder.getParent();
@@ -360,9 +402,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             int maxWidth = getMaxWidth(mSidebarItemsSize);
             int maxHeight = maxRowHeightList.get(row);
             /* set size for sidebar items before rendering*/
-            sidebarViewHolder.setLayoutWidth(maxWidth);
-            sidebarViewHolder.setLayoutHeight(maxHeight);
+//            sidebarViewHolder.setLayoutWidth(maxWidth);
+//            sidebarViewHolder.setLayoutHeight(maxHeight);
             View sidebarView = sidebarViewHolder.getItemView();
+            ViewGroup.LayoutParams params=sidebarView.getLayoutParams();
+            params.width=maxWidth;
+            params.height=maxHeight;
+//            sidebarView.requestLayout();
+
             tableRow.removeViewInLayout(sidebarView);
             /* add click listener*/
             final int sidebarPosFinal = row;
@@ -395,24 +442,25 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             if (sidebarView.getParent()!=null){
                 ((ViewGroup)sidebarView.getParent()).removeView(sidebarView);
             }
+
             tableRow.addView(sidebarView);
            if (tableRow.getParent()!=null){
                 ((ViewGroup)tableRow.getParent()).removeView(tableRow);
             }
             mSidebarTableLayout.addView(tableRow);
             /* set horizontal divider */
-            if (horizontalDividerHeight != 0) {
-                if (row < size - 1) {
-                    View horizontalDivider = new View(getContext());
-                    horizontalDivider.setLayoutParams(new TableRow.
-                            LayoutParams(maxWidth, horizontalDividerHeight
-                    ));
-                    if (mHorizontalSidebarDivider != null) {
-                        horizontalDivider.setBackground(mHorizontalSidebarDivider);
-                    }
-                    mSidebarTableLayout.addView(horizontalDivider);
-                }
-            }
+//            if (horizontalDividerHeight != 0) {
+//                if (row < size - 1) {
+//                    View horizontalDivider = new View(getContext());
+//                    horizontalDivider.setLayoutParams(new TableRow.
+//                            LayoutParams(maxWidth, horizontalDividerHeight
+//                    ));
+//                    if (mHorizontalSidebarDivider != null) {
+//                        horizontalDivider.setBackground(mHorizontalSidebarDivider);
+//                    }
+//                    mSidebarTableLayout.addView(horizontalDivider);
+//                }
+//            }
 
 
         }
@@ -449,39 +497,57 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         if (mFitHorizontally){
              averageWidth=getContentAverageWidth(size);
         }
+        /* header divider */
+        if (mVerticalHeaderDivider!=null){
+            mHeaderTableRow.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE | LinearLayout.SHOW_DIVIDER_BEGINNING);
+            mHeaderTableRow.setDividerDrawable(mVerticalHeaderDivider);
+        }
         for (int col = 0; col < size; col++) {
             final BaseSmartHeaderItemViewHolder headerViewHolder = mHeaderItemList.get(col);
 
             /* get max header items height*/
             int maxHeight = getMaxHeight(mHeaderItemsSize);
+
+            View headerView=headerViewHolder.getItemView();
             /* set max height to all header items*/
-            headerViewHolder.setLayoutHeight(maxHeight);
+//            headerViewHolder.setLayoutHeight(maxHeight);
+            ViewGroup.LayoutParams headerParams=headerView.getLayoutParams();
+            if (headerParams==null){
+                headerParams=new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,maxHeight);
+            }
+            headerParams.height=maxHeight;
 
             /*if fit horizontally is true set average of width to the header*/
             if(mFitHorizontally){
 
-                headerViewHolder.setLayoutWidth(averageWidth);
+//                headerViewHolder.setLayoutWidth(averageWidth);
+                headerParams.width=averageWidth;
             }else {
                 if (mFitToMaxWidth){
                     /*set max of columns width to the all header*/
-                    headerViewHolder.setLayoutWidth(maxWidthOfColumns);
+//                    headerViewHolder.setLayoutWidth(maxWidthOfColumns);
+                    headerParams.width=maxWidthOfColumns;
                 }else if(mStretchIfContentNotFitScreen && stretchedWidth!=-2){
 
                     if (!mStretchToFitDeletedPosition.contains(col)){
-                        headerViewHolder.setLayoutWidth(stretchedWidth);
+//                        headerViewHolder.setLayoutWidth(stretchedWidth);
+                        headerParams.width=stretchedWidth;
                     }else {
-                        headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+//                        headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+                        headerParams.width=maxColumnsWidthList.get(col);
                     }
                 }
 
                 else {
                     /* set max width of current column to headerViewHolder*/
-                    headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+//                    headerViewHolder.setLayoutWidth(maxColumnsWidthList.get(col));
+                    headerParams.width=maxColumnsWidthList.get(col);
                 }
             }
 
+//            headerView.requestLayout();
 
-            View headerView=headerViewHolder.getItemView();
+
             /* add click listener*/
             final int headerFinalPos = col;
             if (mHeaderItemClickListener != null) {
@@ -511,18 +577,19 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             }
             mHeaderTableRow.addView(headerView);
 
-            /* header divider */
-            if (verticalDividerWidth != 0) {
-                if (col < size - 1) {
-                    View verticalDivider = new View(getContext());
-                    verticalDivider.setLayoutParams(new TableRow.
-                            LayoutParams(verticalDividerWidth, maxHeight));
-                    if (mVerticalHeaderDivider != null) {
-                        verticalDivider.setBackground(mVerticalHeaderDivider);
-                    }
-                    mHeaderTableRow.addView(verticalDivider);
-                }
-            }
+
+//            if (verticalDividerWidth != 0) {
+//                if (col < size - 1) {
+//                    View verticalDivider = new View(getContext());
+//                    verticalDivider.setLayoutParams(new TableRow.
+//                            LayoutParams(verticalDividerWidth, maxHeight));
+//                    if (mVerticalHeaderDivider != null) {
+//                        verticalDivider.setBackground(mVerticalHeaderDivider);
+//                    }
+//                    mHeaderTableRow.addView(verticalDivider);
+//                }
+//            }
+
         }
     }
 
@@ -530,9 +597,12 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
         if (count==0){return 0;}
         int deviceWidth=getResources().getDisplayMetrics().widthPixels;
-        int sidebarWidth=getMaxWidth(mSidebarItemsSize);
-
+        int sidebarWidth=0;
+        if (mShowSidebar){
+            sidebarWidth=getMaxWidth(mSidebarItemsSize);
+        }
         return ((deviceWidth-sidebarWidth)-(count*verticalDividerWidth))/count;
+
     }
 
     /*
@@ -541,6 +611,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
      * for each sidebar item one tableRow
      * for each header item one content
      * */
+    @SuppressWarnings("rawtypes")
     private void setContents(BaseSmartTableAdapter adapter) {
 
 
@@ -562,6 +633,14 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
         if (mFitHorizontally){
              averageWidth=getContentAverageWidth(numOfHeaderItem);
         }
+
+//        if (horizontalDividerHeight!=0){
+//            mContentTableLayout.setDividerPadding(horizontalDividerHeight);
+            if (mHorizontalContentDivider!=null){
+                mContentTableLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE );
+                mContentTableLayout.setDividerDrawable(mHorizontalContentDivider);
+            }
+//        }
         for (int row = 0; row < numOfSidebarItem; row++) {
             TableRow tableRow = (TableRow) mContentItemList.get(index)
                     .getParent();
@@ -569,8 +648,17 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             if (adapter.getContentRowBackground(row) != null) {
                 tableRow.setBackground(adapter.getContentRowBackground(row));
             }
+            tableRow.removeAllViewsInLayout();
+//            if (verticalDividerWidth!=0){
+//                tableRow.setDividerPadding(verticalDividerWidth);
+                if (mVerticalContentDivider!=null){
+                    tableRow.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE|LinearLayout.SHOW_DIVIDER_BEGINNING);
+                    tableRow.setDividerDrawable(mVerticalContentDivider);
+                }
+//            }
+
             /*remove all chide from tableRow to add dividers between childes */
-            tableRow.removeAllViews();
+
             int maxHeight = maxRowHeightList.get(row);
             for (int col = 0; col < numOfHeaderItem; col++) {
 
@@ -579,34 +667,47 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                 final BaseSmartContentItemViewHolder contentViewHolder = mContentItemList.get(index);
                 /* get max width of column*/
                 int maxWidth = maxColumnsWidthList.get(col);
+
+                View contentView = contentViewHolder.getItemView();
                 /* set max size  to contents*/
-                contentViewHolder.setLayoutHeight(maxHeight);
+//                contentViewHolder.setLayoutHeight(maxHeight);
+                ViewGroup.LayoutParams contentItemParams=contentView.getLayoutParams();
+                contentItemParams.height=maxHeight;
 
                 /*if fit horizontally is true set average width to content*/
                 if (mFitHorizontally){
 
-                    contentViewHolder.setLayoutWidth(averageWidth);
+//                    contentViewHolder.setLayoutWidth(averageWidth);
+                    contentItemParams.width=averageWidth;
                 }else {
                     if (mFitToMaxWidth){
                         /*set max of columns width to the all contents*/
-                        contentViewHolder.setLayoutWidth(maxWidthOfColumns);
+//                        contentViewHolder.setLayoutWidth(maxWidthOfColumns);
+                        contentItemParams.width=maxWidthOfColumns;
+
                     }else if(mStretchIfContentNotFitScreen && stretchedWidth!=-2){
 
                         if (!mStretchToFitDeletedPosition.contains(col)){
-                            contentViewHolder.setLayoutWidth(stretchedWidth);
+//                            contentViewHolder.setLayoutWidth(stretchedWidth);
+                            contentItemParams.width=stretchedWidth;
+
                         }else {
-                            contentViewHolder.setLayoutWidth(maxWidth);
+//                            contentViewHolder.setLayoutWidth(maxWidth);
+                            contentItemParams.width=maxWidth;
+
                         }
                     }
 
                     else {
                         /*if fit horizontally is false set max width to content*/
-                        contentViewHolder.setLayoutWidth(maxWidth);
+//                        contentViewHolder.setLayoutWidth(maxWidth);
+                        contentItemParams.width=maxWidth;
+
                     }
                 }
 
-                /* add contentViewHolder to table row*/
-                View contentView = contentViewHolder.getItemView();
+
+
 
                 /* set click listener for contentViewHolder*/
 
@@ -635,40 +736,45 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
                 if (contentView.getParent()!=null){
                     ((ViewGroup)contentView.getParent()).removeView(contentView);
                 }
-
+                /* add contentViewHolder to table row*/
                 tableRow.addView(contentView);
-                if (verticalDividerWidth != 0) {
-                    if (col < numOfHeaderItem - 1) {
-
-                        View verticalDivider = new View(getContext());
-                        verticalDivider.setLayoutParams(new TableRow.
-                                LayoutParams(verticalDividerWidth, maxHeight));
-                        if (mVerticalContentDivider != null) {
-                            verticalDivider.setBackground(mVerticalContentDivider);
-                        }
-
-                        tableRow.addView(verticalDivider);
-                    }
-                }
+//                if (verticalDividerWidth != 0) {
+//                    if (col < numOfHeaderItem - 1) {
+//
+//                        View verticalDivider = new View(getContext());
+//                        verticalDivider.setLayoutParams(new TableRow.
+//                                LayoutParams(verticalDividerWidth, maxHeight));
+//                        if (mVerticalContentDivider != null) {
+//                            verticalDivider.setBackground(mVerticalContentDivider);
+//                        }
+//
+//                        tableRow.addView(verticalDivider);
+//                    }
+//                }
                 index++;
             }
 
-            mContentTableLayout.addView(tableRow);
-            /* add divider */
-            if (horizontalDividerHeight != 0) {
-                View horizontalDivider = new View(getContext());
 
-                horizontalDivider.setLayoutParams(new TableLayout.
-                        LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, horizontalDividerHeight
-                ));
-                if (mHorizontalContentDivider != null) {
-                    horizontalDivider.setBackground(mHorizontalContentDivider);
-                }
-                mContentTableLayout.addView(horizontalDivider);
-            }
+
+            mContentTableLayout.addView(tableRow);
+
+            /* add divider */
+//            if (horizontalDividerHeight != 0) {
+//                View horizontalDivider = new View(getContext());
+//
+//                horizontalDivider.setLayoutParams(new TableLayout.
+//                        LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, horizontalDividerHeight
+//                ));
+//                if (mHorizontalContentDivider != null) {
+//                    horizontalDivider.setBackground(mHorizontalContentDivider);
+//                }
+//                mContentTableLayout.addView(horizontalDivider);
+//            }
         }
 
+
     }
+
 
     @SuppressWarnings("unchecked")
     private List<BaseSmartSidebarItemViewHolder> generateSidebarItems(BaseSmartTableAdapter adapter) {
@@ -723,6 +829,7 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
              *generate BaseSmartHeaderItem from adapter by calling
              *adapter.onCreateHeaderItem
              */
+
 
             final BaseSmartHeaderItemViewHolder headerViewHolder = getHeaderItemViewHolder(mHeaderTableRow,
                     adapter, i);
@@ -980,7 +1087,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 //            if (adapter.getRowCount() == 1) {
                 showSidebarView(true);
 //            }
+            TraceCompat.beginSection("holder3");
             mSideBarItemList = generateSidebarItems(adapter);
+            TraceCompat.endSection();
 
         } else {
 //            mSideBarItemList = Collections.emptyList();
@@ -991,7 +1100,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 //            if (adapter.getColumnCount() == 1) {
                 showHeaderView(true);
 //            }
+            TraceCompat.beginSection("holder");
             mHeaderItemList = generateHeaderItems(adapter);
+            TraceCompat.endSection();
         } else {
 //            mHeaderItemList = Collections.emptyList();
             mHeaderItemsSize = Collections.emptyList();
@@ -1001,7 +1112,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             if (!contentIsShowing()) {
                 showContentView(true);
             }
+            TraceCompat.beginSection("holder2");
             mContentItemList = generateContentItems(adapter);
+            TraceCompat.endSection();
+
 
         } else {
 //            mContentItemList = Collections.emptyList();
@@ -1018,7 +1132,9 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
             setHeaderItems(mSmartTableAdapter);
         }
         if (adapter.getContentItemCount() > 0) {
+            TraceCompat.beginSection("myTrace1");
             setContents(mSmartTableAdapter);
+            TraceCompat.endSection();
         }
     }
 
@@ -1361,29 +1477,29 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
      * Set the hole table width
     * */
     public void setLayoutWidth(@Px int width) {
-        ViewGroup.LayoutParams params = root.getLayoutParams();
+        ViewGroup.LayoutParams params = getLayoutParams();
         params.width = width;
-        root.setLayoutParams(params);
+        setLayoutParams(params);
     }
     /**
      * Set the hole table height
      * */
     public void setLayoutHeight(@Px int height) {
-        ViewGroup.LayoutParams params = root.getLayoutParams();
+        ViewGroup.LayoutParams params = getLayoutParams();
         params.height = height;
-        root.setLayoutParams(params);
+        setLayoutParams(params);
     }
     /**
      * Returns the hole table width
      * */
     public int getLayoutWidth() {
-        return root.getWidth();
+        return getWidth();
     }
     /**
      * Returns the hole table height
      * */
     public int getLayoutHeight() {
-        return root.getHeight();
+        return getHeight();
     }
     /**
      * Returns the view set by {@link #setCornerTopView(int)}
@@ -1593,6 +1709,10 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     public void setHorizontalSidebarDivider(Drawable horizontalSidebarDivider) {
         mHorizontalSidebarDivider = horizontalSidebarDivider;
+        if (mHorizontalContentDivider != null) {
+            horizontalDividerHeight = mHorizontalContentDivider.getIntrinsicHeight();
+        }
+
     }
 
     public Drawable getVerticalHeaderDivider() {
@@ -1601,5 +1721,8 @@ public class SmartTableView extends RelativeLayout implements NotifyObserver {
 
     public void setVerticalHeaderDivider(Drawable verticalHeaderDivider) {
         mVerticalHeaderDivider = verticalHeaderDivider;
+        if (mVerticalContentDivider != null) {
+            verticalDividerWidth = mVerticalContentDivider.getIntrinsicWidth();
+        }
     }
 }
