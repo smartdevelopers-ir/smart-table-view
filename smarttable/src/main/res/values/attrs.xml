@@ -80,5 +80,28 @@
         <attr name="stretchHeaderWidthToContentWidth" format="boolean|reference"/>
         <attr name="stretchContentWidthToHeaderWidth" format="boolean|reference"/>
         <attr name="android:layoutDirection"/>
+        <attr name="contentHorizontalDivider" format="reference"/>
+        <attr name="contentVerticalDivider" format="reference"/>
+        <attr name="headerDivider" format="reference"/>
+        <attr name="sidebarDivider" format="reference"/>
+        <attr name="showDefaultDividers" format="boolean|reference"/>
+    </declare-styleable>
+    <declare-styleable name="SmartTableView2">
+        <attr name="cornerTopRightView" />
+        <attr name="cornerTopRightColor" />
+        <attr name="headerBackground" />
+        <attr name="sidebarBackground" />
+        <attr name="contentBackground" />
+        <attr name="showSidebar" />
+        <attr name="showHeader"/>
+        <attr name="fitHorizontally" />
+        <attr name="contentHorizontalDivider" />
+        <attr name="contentVerticalDivider" />
+        <attr name="headerDivider" />
+        <attr name="sidebarDivider" />
+        <attr name="showDefaultDividers"/>
+        <attr name="stretchIfContentNotFitScreen" />
+        <attr name="verticalSplitterWidth" format="dimension|reference" />
+        <attr name="horizontalSplitterHeight" format="dimension|reference" />
     </declare-styleable>
 </resources>

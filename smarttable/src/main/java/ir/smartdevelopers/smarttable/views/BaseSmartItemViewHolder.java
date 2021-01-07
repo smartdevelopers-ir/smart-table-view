@@ -13,6 +13,7 @@ public abstract class BaseSmartItemViewHolder {
     private Object tag;
     private ViewParent mParent;
     private int mPosition;
+    private ViewGroup.LayoutParams mDefaultLayoutParams;
 
     public BaseSmartItemViewHolder(View itemView) {
         mItemView = itemView;
@@ -87,5 +88,13 @@ public abstract class BaseSmartItemViewHolder {
 
     protected void setAdapterPosition(int position) {
         mPosition = position;
+    }
+
+     ViewGroup.LayoutParams getDefaultLayoutParams() {
+        return mDefaultLayoutParams;
+    }
+
+     void setDefaultLayoutParams(ViewGroup.LayoutParams defaultLayoutParams) {
+        mDefaultLayoutParams = defaultLayoutParams;
     }
 }

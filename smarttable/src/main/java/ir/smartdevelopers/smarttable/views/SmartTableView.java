@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -36,8 +38,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ir.smartdevelopers.smarttable.R;
+import ir.smartdevelopers.smarttable.views.TableView2.SmartBaseTableAdapter;
+import ir.smartdevelopers.smarttable.views.listeners.Callback;
 import ir.smartdevelopers.smarttable.views.listeners.OnContentItemClickListener;
 import ir.smartdevelopers.smarttable.views.listeners.OnContentItemLongClickListener;
 import ir.smartdevelopers.smarttable.views.listeners.OnHeaderItemClickListener;
@@ -120,6 +126,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
     private boolean mFitToMaxWidth=false;
     /*if content not fill screen stretch other content to fit screen*/
     private boolean mStretchIfContentNotFitScreen;
+    private ExecutorService mExecutorService=Executors.newSingleThreadExecutor();
 
 
     public SmartTableView(Context context) {
@@ -394,12 +401,14 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             mSidebarTableLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE );
             mSidebarTableLayout.setDividerDrawable(mHorizontalSidebarDivider);
         }
+        /* get max size */
+        int maxWidth = getMaxWidth(mSidebarItemsSize);
+        mSidebarTableLayout.getLayoutParams().width=maxWidth;
         for (int row = 0; row < size; row++) {
             final BaseSmartSidebarItemViewHolder sidebarViewHolder = mSideBarItemList.get(row);
-            TableRow tableRow = (TableRow) sidebarViewHolder.getParent();
+//            FrameLayout tableRow = (FrameLayout) sidebarViewHolder.getParent();
 
             /* get max size */
-            int maxWidth = getMaxWidth(mSidebarItemsSize);
             int maxHeight = maxRowHeightList.get(row);
             /* set size for sidebar items before rendering*/
 //            sidebarViewHolder.setLayoutWidth(maxWidth);
@@ -410,7 +419,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             params.height=maxHeight;
 //            sidebarView.requestLayout();
 
-            tableRow.removeViewInLayout(sidebarView);
+//            tableRow.removeViewInLayout(sidebarView);
             /* add click listener*/
             final int sidebarPosFinal = row;
             if (mSidebarItemClickListener != null) {
@@ -436,18 +445,19 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             }
             /* set row background */
             if (adapter.getSidebarRowBackground(sidebarPosFinal) != null) {
-                tableRow.setBackground(adapter.getSidebarRowBackground(sidebarPosFinal));
+                sidebarView.setBackground(adapter.getSidebarRowBackground(sidebarPosFinal));
             }
 
             if (sidebarView.getParent()!=null){
                 ((ViewGroup)sidebarView.getParent()).removeView(sidebarView);
             }
 
-            tableRow.addView(sidebarView);
-           if (tableRow.getParent()!=null){
-                ((ViewGroup)tableRow.getParent()).removeView(tableRow);
-            }
-            mSidebarTableLayout.addView(tableRow);
+//            tableRow.addView(sidebarView);
+//           if (tableRow.getParent()!=null){
+//                ((ViewGroup)tableRow.getParent()).removeView(tableRow);
+//            }
+//            mSidebarTableLayout.addView(tableRow);
+            mSidebarTableLayout.addView(sidebarView);
             /* set horizontal divider */
 //            if (horizontalDividerHeight != 0) {
 //                if (row < size - 1) {
@@ -502,11 +512,12 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             mHeaderTableRow.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE | LinearLayout.SHOW_DIVIDER_BEGINNING);
             mHeaderTableRow.setDividerDrawable(mVerticalHeaderDivider);
         }
+        /* get max header items height*/
+        int maxHeight = getMaxHeight(mHeaderItemsSize);
+        mHeaderTableRow.getLayoutParams().height=maxHeight;
         for (int col = 0; col < size; col++) {
             final BaseSmartHeaderItemViewHolder headerViewHolder = mHeaderItemList.get(col);
 
-            /* get max header items height*/
-            int maxHeight = getMaxHeight(mHeaderItemsSize);
 
             View headerView=headerViewHolder.getItemView();
             /* set max height to all header items*/
@@ -660,6 +671,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             /*remove all chide from tableRow to add dividers between childes */
 
             int maxHeight = maxRowHeightList.get(row);
+            tableRow.getLayoutParams().height=maxHeight;
             for (int col = 0; col < numOfHeaderItem; col++) {
 
                 final int rowPos=row;
@@ -778,42 +790,47 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
 
     @SuppressWarnings("unchecked")
     private List<BaseSmartSidebarItemViewHolder> generateSidebarItems(BaseSmartTableAdapter adapter) {
-        int size = adapter.getRowCount();
+        int rowCount = adapter.getRowCount();
         /* create side bar measure size array*/
-        mSidebarItemsSize = new ArrayList<>(size);
-        List<BaseSmartSidebarItemViewHolder> smartSidebarItemList = new ArrayList<>(size);
+        mSidebarItemsSize = new ArrayList<>(rowCount);
+        List<BaseSmartSidebarItemViewHolder> smartSidebarItemList = new ArrayList<>(rowCount);
+
+        mSidebarTableLayout.getLayoutParams().height=ViewGroup.LayoutParams.WRAP_CONTENT;
+        mSidebarTableLayout.getLayoutParams().width=ViewGroup.LayoutParams.WRAP_CONTENT;
         /* get all items and measure view size*/
-        for (int i = 0; i < size; i++) {
-            TableRow tableRow;
-            if (mSideBarItemList.size() > i) {
-                ViewParent parent = mSideBarItemList.get(i).getParent();
-                tableRow = (TableRow) parent;
-            } else {
-                tableRow = new TableRow(getContext());
-                tableRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        TableLayout.LayoutParams.WRAP_CONTENT));
-            }
+        for (int i = 0; i < rowCount; i++) {
+//            FrameLayout tableRow;
+//            if (mSideBarItemList.size() > i) {
+//                ViewParent parent = mSideBarItemList.get(i).getParent();
+//                tableRow = (FrameLayout) parent;
+//            } else {
+//                tableRow = new FrameLayout(getContext());
+//
+//            }
+//            tableRow.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+//                    FrameLayout.LayoutParams.WRAP_CONTENT));
             /*
              *generate BaseSmartSidebarItem from adapter by calling
              *adapter.onCreateSideBarItem
              */
-            final BaseSmartSidebarItemViewHolder sidebarViewHolder = getSidebarItemViewHolder(tableRow,
+            final BaseSmartSidebarItemViewHolder sidebarViewHolder = getSidebarItemViewHolder(mSidebarTableLayout,
                     adapter, i);
             /*set tableRow as sidebarViewHolder parent to fetch it later */
-            sidebarViewHolder.setParent(tableRow);
+            sidebarViewHolder.setParent(mSidebarTableLayout);
             /* call onBind after view holder created */
             adapter.onBindSidebarViewHolder(sidebarViewHolder, i);
 
             View sidebarView = sidebarViewHolder.getItemView();
 
             /* measure size*/
-            mSidebarItemsSize.add(measureSize(sidebarView));
+//            mSidebarItemsSize.add(measureSize(sidebarView));
 
             /* add BaseSmartSidebarItem to mSideBarItemList*/
             smartSidebarItemList.add(sidebarViewHolder);
         }
         return smartSidebarItemList;
     }
+//    private void generateSidebarItems(BaseSmartTableAdapter adapter, Callback<>)
 
     /*
      * generate HeaderItemsList and their size array
@@ -841,7 +858,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             View headerView = headerViewHolder.getItemView();
 
             /* measure size*/
-            mHeaderItemsSize.add(measureSize(headerView));
+//            mHeaderItemsSize.add(measureSize(headerView));
 
             /* add BaseSmartHeaderItem to mHeaderItemList*/
             headerItemsList.add(headerViewHolder);
@@ -871,7 +888,8 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
                 tableRow = new TableRow(getContext());
 
             }
-
+            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT));
             for (int col = 0; col < numOfHeaderItem; col++) {
                 /*
                  *generate BaseSmartHeaderItem from adapter by calling
@@ -887,7 +905,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
                 View contentView = contentViewHolder.getItemView();
 
                 /* measure content width and add to list*/
-                mContentItemsSize.add(measureSize(contentView));
+//                mContentItemsSize.add(measureSize(contentView));
 
                 /* add BaseSmartContentItem to mContentItemList*/
                 smartContentItemList.add(contentViewHolder);
@@ -908,11 +926,16 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
         } catch (Exception e) {
             oldSidebarViewHolder = adapter.
                     onCreateSidebarViewHolder(parent);
+            if (oldSidebarViewHolder!=null) {
+                oldSidebarViewHolder.setDefaultLayoutParams(oldSidebarViewHolder.getItemView().getLayoutParams());
+            }
         }
         if (oldSidebarViewHolder==null){
             throw new NullPointerException("When showSidebar set true SidebarItemViewHolder can not be null");
         }
         oldSidebarViewHolder.setAdapterPosition(position);
+        oldSidebarViewHolder.getItemView().getLayoutParams().width=oldSidebarViewHolder.getDefaultLayoutParams().width;
+        oldSidebarViewHolder.getItemView().getLayoutParams().height=oldSidebarViewHolder.getDefaultLayoutParams().height;
         return oldSidebarViewHolder;
     }
 
@@ -925,11 +948,17 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
         } catch (Exception e) {
             oldHeaderViewHolder = adapter.
                     onCreateHeaderViewHolder(parent);
+            if (oldHeaderViewHolder!=null){
+                oldHeaderViewHolder.setDefaultLayoutParams(oldHeaderViewHolder.getItemView().getLayoutParams());
+            }
         }
         if (oldHeaderViewHolder==null){
             throw new NullPointerException("When showHeader set true HeaderItemViewHolder can not be null");
         }
         oldHeaderViewHolder.setAdapterPosition(position);
+        oldHeaderViewHolder.getItemView().getLayoutParams().width=oldHeaderViewHolder.getDefaultLayoutParams().width;
+        oldHeaderViewHolder.getItemView().getLayoutParams().height=oldHeaderViewHolder.getDefaultLayoutParams().height;
+
         return oldHeaderViewHolder;
     }
 
@@ -942,9 +971,12 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
         } catch (Exception e) {
             oldContentViewHolder = adapter.
                     onCreateContentViewHolder(parent);
+            oldContentViewHolder.setDefaultLayoutParams(oldContentViewHolder.getItemView().getLayoutParams());
         }
         oldContentViewHolder.setAdapterPosition(index);
         oldContentViewHolder.setContentPosition(rowPosition, colPosition);
+        oldContentViewHolder.getItemView().getLayoutParams().width=oldContentViewHolder.getDefaultLayoutParams().width;
+        oldContentViewHolder.getItemView().getLayoutParams().height=oldContentViewHolder.getDefaultLayoutParams().height;
         return oldContentViewHolder;
     }
 
@@ -1079,7 +1111,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
         return result;
     }
 
-    private void updateTable(BaseSmartTableAdapter adapter) {
+    private void updateTable(final BaseSmartTableAdapter adapter) {
         mSideBarItemList = Collections.emptyList();
         mHeaderItemList = Collections.emptyList();
         mContentItemList = Collections.emptyList();
@@ -1087,7 +1119,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
 //            if (adapter.getRowCount() == 1) {
                 showSidebarView(true);
 //            }
-            TraceCompat.beginSection("holder3");
+            TraceCompat.beginSection("generateSidebarItems");
             mSideBarItemList = generateSidebarItems(adapter);
             TraceCompat.endSection();
 
@@ -1100,7 +1132,7 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
 //            if (adapter.getColumnCount() == 1) {
                 showHeaderView(true);
 //            }
-            TraceCompat.beginSection("holder");
+            TraceCompat.beginSection("generateHeaderItems");
             mHeaderItemList = generateHeaderItems(adapter);
             TraceCompat.endSection();
         } else {
@@ -1112,10 +1144,10 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             if (!contentIsShowing()) {
                 showContentView(true);
             }
-            TraceCompat.beginSection("holder2");
+            TraceCompat.beginSection("generateContentItems");
             mContentItemList = generateContentItems(adapter);
             TraceCompat.endSection();
-
+            
 
         } else {
 //            mContentItemList = Collections.emptyList();
@@ -1123,21 +1155,66 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
             showContentView(false);
         }
 
-        maxRowHeightList = generateMaxRowHeight(adapter.getRowCount(), mSidebarItemsSize, mContentItemsSize);
-        maxColumnsWidthList = generateMaxColumnWidth(adapter.getColumnCount(), mHeaderItemsSize, mContentItemsSize);
-        if (mShowSidebar && adapter.getRowCount() > 0) {
-            setSidebarItems(mSmartTableAdapter);
-        }
-        if (mShowHeader && adapter.getColumnCount() > 0) {
-            setHeaderItems(mSmartTableAdapter);
-        }
-        if (adapter.getContentItemCount() > 0) {
-            TraceCompat.beginSection("myTrace1");
-            setContents(mSmartTableAdapter);
-            TraceCompat.endSection();
-        }
+
+        measureAsync(new Callback<Void>() {
+            @Override
+            public void onComplete(Void aVoid) {
+                maxRowHeightList = generateMaxRowHeight(adapter.getRowCount(), mSidebarItemsSize, mContentItemsSize);
+                maxColumnsWidthList = generateMaxColumnWidth(adapter.getColumnCount(), mHeaderItemsSize, mContentItemsSize);
+                if (mShowSidebar && adapter.getRowCount() > 0) {
+                    TraceCompat.beginSection("setSidebarItems");
+                    setSidebarItems(mSmartTableAdapter);
+                    TraceCompat.endSection();
+                }
+                if (mShowHeader && adapter.getColumnCount() > 0) {
+                    TraceCompat.beginSection("setHeaderItems");
+                    setHeaderItems(mSmartTableAdapter);
+                    TraceCompat.endSection();
+                }
+                if (adapter.getContentItemCount() > 0) {
+                    TraceCompat.beginSection("setContents");
+                    setContents(mSmartTableAdapter);
+                    TraceCompat.endSection();
+                }
+            }
+        },adapter);
+
     }
 
+    private void measureAsync(final Callback<Void> callback, BaseSmartTableAdapter adapter){
+      final int rowCount=adapter.getRowCount();
+      final int columnCount=adapter.getColumnCount();
+      final int contentCount=adapter.getContentItemCount();
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mShowSidebar && rowCount>0) {
+                    for (int i=0;i<rowCount;i++){
+                        View sidebarView=mSideBarItemList.get(i).getItemView();
+                        mSidebarItemsSize.add(measureSize(sidebarView));
+                    }
+                }
+                if (mShowHeader && columnCount > 0) {
+                    for (int i=0;i<columnCount;i++){
+                        View headerView=mHeaderItemList.get(i).getItemView();
+                        mHeaderItemsSize.add(measureSize(headerView));
+                    }
+                }
+                if (contentCount> 0) {
+                    for (int i=0;i<contentCount;i++){
+                        View contentView=mContentItemList.get(i).getItemView();
+                        mContentItemsSize.add(measureSize(contentView));
+                    }
+                }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onComplete(null);
+                    }
+                });
+            }
+        });
+    }
 
     /**
      * <p>this method returns an array of ints that value at position 0 is row position
@@ -1221,26 +1298,33 @@ public class SmartTableView extends ConstraintLayout implements NotifyObserver {
     /*
      * measure size of view before render it
      * */
-    private Pair<Integer, Integer> measureSize(View view) {
+    public Pair<Integer, Integer> measureSize(View view) {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        if (view.getParent()!=null){
-            ((ViewGroup)view.getParent()).removeView(view);
-        }
-        view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        RelativeLayout relativeLayout=new RelativeLayout(getContext());
-        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT));
-        relativeLayout.addView(view);
+//        if (view.getParent()!=null){
+//            ((ViewGroup)view.getParent()).removeView(view);
+//        }
+//        view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.MATCH_PARENT));
+//        RelativeLayout relativeLayout=new RelativeLayout(getContext());
+//        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+//                LayoutParams.WRAP_CONTENT));
+//        relativeLayout.addView(view);
+
+        //new
+
+
         int deviceWidth = metrics.widthPixels;
         int deviceHeight = metrics.heightPixels;
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(deviceWidth, MeasureSpec.UNSPECIFIED);
         int heightMeasureSpec = MeasureSpec.makeMeasureSpec(deviceHeight, MeasureSpec.UNSPECIFIED);
-        relativeLayout.measure(widthMeasureSpec, heightMeasureSpec);
-        Pair<Integer, Integer> result=new Pair<>(relativeLayout.getMeasuredWidth(), relativeLayout.getMeasuredHeight());
-        relativeLayout.removeView(view);
-        view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+//        relativeLayout.measure(widthMeasureSpec, heightMeasureSpec);
+//        Pair<Integer, Integer> result=new Pair<>(relativeLayout.getMeasuredWidth(), relativeLayout.getMeasuredHeight());
+//        relativeLayout.removeView(view);
+//        view.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT));
+        //new
+        view.measure(widthMeasureSpec,heightMeasureSpec);
+        Pair<Integer, Integer> result=new Pair<>(view.getMeasuredWidth(), view.getMeasuredHeight());
         return result;
     }
 
