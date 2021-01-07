@@ -67,6 +67,7 @@ OnBindListener{
     @Override
     public ContentRowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         SmartRecyclerView innerRV=new SmartRecyclerView(parent.getContext());
+        innerRV.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         innerRV.setRecycledViewPool(mRecycledViewPool);
 //        innerRV.setItemAnimator(new TableItemChangeAnimator());
 

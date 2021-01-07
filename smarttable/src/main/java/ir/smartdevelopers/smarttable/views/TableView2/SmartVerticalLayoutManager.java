@@ -2,6 +2,7 @@ package ir.smartdevelopers.smarttable.views.TableView2;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -38,9 +39,9 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
 
     @Override
     public void measureChildWithMargins(@NonNull View child, int widthUsed, int heightUsed) {
-
-        super.measureChildWithMargins(child, widthUsed, heightUsed);
         measureChild(child,widthUsed,heightUsed);
+        super.measureChildWithMargins(child, widthUsed, heightUsed);
+
     }
 
 
@@ -60,12 +61,20 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
 
             if (scrollPosition>0){
                 contentLayoutManager.scrollToPositionWithOffset(scrollPosition,scrollOffset);
+//                contentChild.scrollToPosition(scrollPosition);
+//                contentChild.scrollTo(scrollOffset,0);
+                Log.v("TTT", "scrollToPositionWithOffset called:="+scrollPosition);
             }
         }
 
 //        super.measureChild(child, widthUsed, heightUsed);
         mCellsHeightHolder.put(getPosition(child),child.getMeasuredHeight());
 //        Log.v("TTT","getMeasuredWidth "+getPosition(child)+" is :"+child.getMeasuredWidth());
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        super.onLayoutChildren(recycler, state);
     }
 
     public SparseIntArray getCellsWidthHolder() {

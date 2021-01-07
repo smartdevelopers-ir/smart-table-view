@@ -1,5 +1,6 @@
 package ir.smartdevelopers.smarttable.views.TableView2;
 
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -238,9 +239,21 @@ import androidx.recyclerview.widget.RecyclerView;
                 sidebarEdgeLeft = mSmartTableView2.getContentRecyclerView().getRight();
             }
             View child=layoutManager.findViewByPosition(mScrollPosition);
-            int rightOffset = child.getRight();
-            int dividerWidth=layoutManager.getRightDecorationWidth(child);
-            mScrollPositionOffset=Math.abs(sidebarEdgeLeft-(rightOffset+dividerWidth));
+            if (child!=null){
+                int rightOffset = child.getRight();
+
+                if (recyclerView.getItemDecorationCount()==1){
+                    Rect rect=new Rect();
+                    recyclerView.getDecoratedBoundsWithMargins(child,rect);
+                    int dividerWidth=Math.abs(rect.left-child.getLeft());
+                    mScrollPositionOffset=Math.abs(sidebarEdgeLeft-(rightOffset+dividerWidth));
+                }else {
+                    mScrollPositionOffset=Math.abs(sidebarEdgeLeft-rightOffset);
+                }
+
+            }else {
+                mScrollPositionOffset=0;
+            }
         }else {
 //            Log.v("TTT","getLayoutDirection not RTL");
             mScrollPositionOffset = layoutManager.findViewByPosition(mScrollPosition).getLeft();
