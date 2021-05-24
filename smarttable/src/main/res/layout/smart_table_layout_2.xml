@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/smart_table_view_corner_top_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/smart_table_view_header_recyclerView"
+        app:layout_constraintEnd_toEndOf="@id/smart_table_view_sidebar_recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/smart_table_view_header_recyclerView"
+        tools:background="#00BF36"
+
+        />
+
+    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+        android:id="@+id/smart_table_view_header_recyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/smart_table_view_corner_top_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        tools:layout_width="match_parent"
+        tools:layout_height="40dp"
+        tools:background="#8214D1"
+        tools:minWidth="120dp"
+        />
+
+    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+        android:id="@+id/smart_table_view_sidebar_recyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+
+        app:layout_constraintBottom_toBottomOf="@id/smart_table_view_content_recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/smart_table_view_header_recyclerView"
+        app:layout_constraintVertical_bias="0"
+
+
+        tools:background="#FFAB00"
+        tools:layout_height="match_parent"
+        tools:layout_width="40dp" />
+
+    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+        android:id="@+id/smart_table_view_content_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/smart_table_view_header_recyclerView"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/smart_table_view_sidebar_recyclerView"
+        app:layout_constraintTop_toBottomOf="@id/smart_table_view_header_recyclerView"
+        app:layout_constraintVertical_bias="0"
+        tools:background="#00B8D4"
+        tools:layout_height="match_parent"
+        tools:layout_width="match_parent"
+        tools:minHeight="140dp"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/smart_table_view_sidebarGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="smart_table_view_sidebar_recyclerView,smart_table_view_corner_top_view" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/smart_table_view_headerGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="smart_table_view_header_recyclerView,smart_table_view_corner_top_view" />
+</merge>
