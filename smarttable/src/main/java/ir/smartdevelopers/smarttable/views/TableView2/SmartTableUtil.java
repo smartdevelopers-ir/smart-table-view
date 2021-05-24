@@ -22,7 +22,7 @@ public class SmartTableUtil {
         SparseIntArray tempWidthSize=new SparseIntArray();
         SparseIntArray widthSize=new SparseIntArray();
         if (smartTableView2.sideBarIsShowing()){
-            sidebarWidth=SparseUtil.getMax(smartTableView2.getSidebarLayoutManager().getCellsWidthHolder());
+            sidebarWidth=SparseUtil.getMax(smartTableView2.getSidebarLayoutManager().getCellsHeightHolder());
 
         }
         int deviceWidth=smartTableView2.getContext().getResources().getDisplayMetrics().widthPixels;

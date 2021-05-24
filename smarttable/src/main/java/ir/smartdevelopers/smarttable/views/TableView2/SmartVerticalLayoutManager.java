@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,7 +41,17 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
     @Override
     public void measureChildWithMargins(@NonNull View child, int widthUsed, int heightUsed) {
         measureChild(child,widthUsed,heightUsed);
-        super.measureChildWithMargins(child, widthUsed, heightUsed);
+        int pos=getPosition(child);
+        int height=mSmartTableView2.getHeightSparseArray().get(pos);
+        if (height!=0){
+            if (child.getLayoutParams()!=null){
+                child.getLayoutParams().height=height;
+            }
+            super.measureChildWithMargins(child, widthUsed, height);
+        }else {
+            super.measureChildWithMargins(child, widthUsed, heightUsed);
+        }
+
 
     }
 
@@ -77,9 +88,11 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
         super.onLayoutChildren(recycler, state);
     }
 
-    public SparseIntArray getCellsWidthHolder() {
+    public SparseIntArray getCellsHeightHolder() {
         return mCellsHeightHolder;
     }
+
+
     public int getMaxWidth(){
         return SparseUtil.getMax(mCellsHeightHolder);
     }

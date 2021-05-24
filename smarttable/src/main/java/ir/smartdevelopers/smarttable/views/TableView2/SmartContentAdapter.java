@@ -1,7 +1,6 @@
 package ir.smartdevelopers.smarttable.views.TableView2;
 
 import android.os.Parcelable;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -87,6 +86,7 @@ OnBindListener{
 
     @Override
     public void onBindViewHolder(@NonNull ContentRowViewHolder holder, int position) {
+
         SmartRecyclerView rowRecyclerView=(SmartRecyclerView)holder.itemView;
         SmartHorizontalAdapter horizontalAdapter=new SmartHorizontalAdapter(mSmartTableView2.getAdapter(),position,
                 mSmartTableView2);
@@ -97,9 +97,9 @@ OnBindListener{
         }
 
         rowRecyclerView.setAdapter(horizontalAdapter);
-        if (mSmartTableView2.sideBarIsShowing()) {
+        if (mSmartTableView2.sideBarIsShowing() ) {
             int contentRowHeight = SmartTableUtil.measureHeight(rowRecyclerView);
-            int sidebarHeight = mSidebarLayoutManager.getCellsWidthHolder().get(position);
+            int sidebarHeight = mSidebarLayoutManager.getCellsHeightHolder().get(position);
             if (sidebarHeight == 0) {
                 View sidebar = mSidebarLayoutManager.findViewByPosition(position);
                 if (sidebar != null ) {
@@ -110,7 +110,7 @@ OnBindListener{
             }
 
             int maxHeight = Math.max(contentRowHeight, sidebarHeight);
-            if (sidebarHeight!=0)
+            if (sidebarHeight!=0 && mSmartTableView2.getHeightSparseArray().get(position)==0)
             mSmartTableView2.getHeightSparseArray().put(position,maxHeight);
             if (maxHeight>sidebarHeight){
                 // notify sidebar item changed
@@ -120,21 +120,21 @@ OnBindListener{
                 }
             }
 
-            ViewGroup.LayoutParams defaultParams = rowRecyclerView.getLayoutParams();
-            if (defaultParams != null) {
-
-                int defaultHeight = defaultParams.height;
-                if (defaultHeight != maxHeight) {
-                    defaultParams.height = maxHeight;
-//                rowRecyclerView.setLayoutParams(defaultParams);
-                }
-            } else {
-
-//                Log.v("TTT", "content row height= " + contentRowHeight + " sidebar row =" + sidebarHeight);
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        maxHeight);
-                rowRecyclerView.setLayoutParams(params);
-            }
+//            ViewGroup.LayoutParams defaultParams = rowRecyclerView.getLayoutParams();
+//            if (defaultParams != null) {
+//
+//                int defaultHeight = defaultParams.height;
+//                if (defaultHeight != maxHeight) {
+//                    defaultParams.height = maxHeight;
+////                rowRecyclerView.setLayoutParams(defaultParams);
+//                }
+//            } else {
+//
+////                Log.v("TTT", "content row height= " + contentRowHeight + " sidebar row =" + sidebarHeight);
+//                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                        maxHeight);
+//                rowRecyclerView.setLayoutParams(params);
+//            }
 
 
 
@@ -156,7 +156,7 @@ OnBindListener{
     @Override
     public void onBind(int position) {
 //        Log.v("TTT","onBind = "+position);
-        if (mSidebarLayoutManager!=null && mSidebarLayoutManager.getCellsWidthHolder().get(position)==0)
+        if (mSidebarLayoutManager!=null && mSidebarLayoutManager.getCellsHeightHolder().get(position)==0)
         notifyItemChanged(position);
     }
 

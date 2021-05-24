@@ -40,7 +40,7 @@ final class SmartSidebarAdapter extends RecyclerView.Adapter<SmartSidebarViewHol
         return mSmartBaseTableAdapter.onCreateSidebarViewHolder(parent,viewType);
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public void onBindViewHolder(@NonNull SmartSidebarViewHolder holder, int position) {
 

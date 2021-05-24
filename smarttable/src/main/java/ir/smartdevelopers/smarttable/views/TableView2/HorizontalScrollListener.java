@@ -69,7 +69,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
                 }
                 mXPosition = ((SmartRecyclerView)rv) .getScrolledX();
-                rv.addOnScrollListener(this);
+
 //                Log.v("TTT","horizontal  rv.addOnScrollListener");
 
 //                Log.v("TTT",".ACTION_DOWN  rv.addOnScrollListener(this);");
@@ -79,6 +79,7 @@ import androidx.recyclerview.widget.RecyclerView;
         }else if(e.getAction()==MotionEvent.ACTION_MOVE){
             mCurrentRVTouched=(SmartRecyclerView) rv;
 //            mVerticalScrollListener2.removeScrollListener(true);
+            rv.addOnScrollListener(this);
             mIsMoving=true;
         }else if (e.getAction()==MotionEvent.ACTION_UP){
 //            Log.v("TTT","horizontal MotionEvent.ACTION_UP ");

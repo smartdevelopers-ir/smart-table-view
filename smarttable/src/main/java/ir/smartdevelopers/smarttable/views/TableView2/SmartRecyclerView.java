@@ -31,7 +31,9 @@ import androidx.recyclerview.widget.RecyclerView;
 //        setItemViewCacheSize();
         this.setDrawingCacheEnabled(true);
         this.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        setOverScrollMode(OVER_SCROLL_NEVER);
     }
+
 
     @Override
     public void onScrolled(int dx, int dy) {
@@ -89,7 +91,9 @@ import androidx.recyclerview.widget.RecyclerView;
         if (listener instanceof HorizontalScrollListener) {
             if (mIsHorizontalScrollListenerRemoved) {
                 mIsHorizontalScrollListenerRemoved = false;
+                clearOnScrollListeners();
                 super.addOnScrollListener(listener);
+                Log.v("TTT","HorizontalScrollListener added");
             } else {
                 // Do not let add the listener
                 Log.w("TTT", "mIsHorizontalScrollListenerRemoved has been tried to add itself "
@@ -98,13 +102,16 @@ import androidx.recyclerview.widget.RecyclerView;
         } else if (listener instanceof VerticalScrollListener2) {
             if (mIsVerticalScrollListenerRemoved) {
                 mIsVerticalScrollListenerRemoved = false;
+                clearOnScrollListeners();
                 super.addOnScrollListener(listener);
+                Log.v("TTT","VerticalScrollListener added");
             } else {
                 // Do not let add the listener
                 Log.w("TTT", "mIsVerticalScrollListenerRemoved has been tried to add itself " +
                         "before remove the old one");
             }
         } else {
+            Log.v("TTT","UnknownScrollListener added");
             super.addOnScrollListener(listener);
         }
     }

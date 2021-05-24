@@ -3,8 +3,6 @@ package ir.smartdevelopers.smarttable.views.TableView2;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Pair;
-import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -29,7 +27,7 @@ public class SmartTableView2 extends ConstraintLayout implements SmartBaseTableA
     private SmartRecyclerView mSidebarRecyclerView;
     private SmartVerticalLayoutManager mSidebarLayoutManager;
     private SmartRecyclerView mContentRecyclerView;
-    private LinearLayoutManager mContentLayoutManager;
+    private SmartVerticalLayoutManager mContentLayoutManager;
     private SparseIntArray horizontalWidthHolder = new SparseIntArray();
     private HorizontalScrollListener horizontalScrollListener;
     private VerticalScrollListener2 verticalScrollListener2;
@@ -196,7 +194,7 @@ public class SmartTableView2 extends ConstraintLayout implements SmartBaseTableA
 //        mContentRecyclerView.getRecycledViewPool().setMaxRecycledViews(0,0);
 
         mContentRecyclerView.setItemAnimator(null);
-        mHeaderRecyclerView.setItemAnimator(null);
+        mSidebarRecyclerView.setItemAnimator(null);
         mContentRecyclerView.setItemViewCacheSize(2);
         mSidebarRecyclerView.setItemViewCacheSize(2);
 //        mContentRecyclerView.setItemViewCacheSize(0);
@@ -473,7 +471,7 @@ public class SmartTableView2 extends ConstraintLayout implements SmartBaseTableA
             mHeaderLayoutManager.getCellsWidthHolder().clear();
         }
         if (sideBarIsShowing() && mSidebarRecyclerView.getAdapter() != null) {
-            mSidebarLayoutManager.getCellsWidthHolder().clear();
+            mSidebarLayoutManager.getCellsHeightHolder().clear();
         }
 
     }
