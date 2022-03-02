@@ -1,10 +1,8 @@
 package ir.smartdevelopers.smarttable.views.TableView2;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public final class SmartHorizontalContentLayoutManager extends LinearLayoutManager {
 
-    private SparseIntArray mCellsWidthHolder =new SparseIntArray();
+    private final SparseIntArray mCellsWidthHolder =new SparseIntArray();
 //    private  SmartHorizontalLayoutManager mHeaderLayoutManager;
     private  SmartTableView2 mSmartTableView2;
     public SmartHorizontalContentLayoutManager(Context context) {
@@ -61,6 +59,31 @@ public final class SmartHorizontalContentLayoutManager extends LinearLayoutManag
     }
 
 
+    @Override
+    public void onAttachedToWindow(RecyclerView view) {
+        super.onAttachedToWindow(view);
+        if (view instanceof SmartRecyclerView){
+                LinearLayoutManager layoutManager=(LinearLayoutManager) mSmartTableView2.getContentRecyclerView().getLayoutManager();
+            if (layoutManager != null) {
+                int firsPos=layoutManager.findFirstCompletelyVisibleItemPosition();
+                if (firsPos!=-1){
+                    View firstView=layoutManager.findViewByPosition(firsPos);
+                    if (firstView instanceof  SmartRecyclerView){
+                        SmartRecyclerView firstRecyleView=(SmartRecyclerView) firstView;
+                        SmartRecyclerView newView=(SmartRecyclerView) view;
+                        if (newView.getScrolledX()!=firstRecyleView.getScrolledY()){
+                            int diff=Math.abs(newView.getScrolledX()-firstRecyleView.getScrolledY());
+                            newView.scrollBy(diff,0);
+                        }
+                    }
+                }
+            }
+
+
+
+        }
+        //if (mSmartTableView2.getHorizontalScrollListener().getScrollPosition())
+    }
 
     public SparseIntArray getCellsWidthHolder() {
         return mCellsWidthHolder;

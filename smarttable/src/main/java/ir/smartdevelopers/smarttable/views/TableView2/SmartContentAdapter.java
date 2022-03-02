@@ -11,55 +11,53 @@ import androidx.recyclerview.widget.RecyclerView;
  final class SmartContentAdapter extends RecyclerView.Adapter<SmartContentAdapter.ContentRowViewHolder> implements
 OnBindListener{
 
-    private SmartBaseTableAdapter mSmartBaseTableAdapter;
-    private RecyclerView.RecycledViewPool mRecycledViewPool=new RecyclerView.RecycledViewPool();
+    private final SmartBaseTableAdapter mSmartBaseTableAdapter;
+    private final RecyclerView.RecycledViewPool mRecycledViewPool=new RecyclerView.RecycledViewPool();
     private RecyclerView.OnItemTouchListener mOnItemTouchListener;
-    private SmartVerticalLayoutManager mSmartVerticalLayoutManager;
-    private SmartVerticalLayoutManager mSidebarLayoutManager;
-    private SmartTableView2 mSmartTableView2;
+    private final SmartVerticalLayoutManager mSidebarLayoutManager;
+    private final SmartTableView2 mSmartTableView2;
 
-
-    private SmartBaseTableAdapter.ContentObserver mContentObserver;
 
     public SmartContentAdapter(final SmartBaseTableAdapter smartBaseTableAdapter, final SmartTableView2 smartTableView2) {
         mSmartBaseTableAdapter = smartBaseTableAdapter;
-        mSmartVerticalLayoutManager =smartTableView2.getSidebarLayoutManager();
         mSidebarLayoutManager=smartTableView2.getSidebarLayoutManager();
         mSmartTableView2=smartTableView2;
-        mContentObserver=new SmartBaseTableAdapter.ContentObserver() {
+        SmartBaseTableAdapter.ContentObserver contentObserver = new SmartBaseTableAdapter.ContentObserver() {
             @Override
             public void onContentItemChanged(int rowPos, int colPos, boolean changeSize) {
-               SmartVerticalLayoutManager manager= (SmartVerticalLayoutManager) mSmartTableView2.getContentRecyclerView().getLayoutManager();
-               if (manager==null){return;}
-               if (changeSize){
+                SmartVerticalLayoutManager manager = (SmartVerticalLayoutManager) mSmartTableView2.getContentRecyclerView().getLayoutManager();
+                if (manager == null) {
+                    return;
+                }
+                if (changeSize) {
 
-                   mSmartTableView2.getHeightSparseArray().delete(rowPos);
-                   mSmartTableView2.getWidthIntArray().delete(colPos);
-                   if (mSmartTableView2.headerIsShowing()){
-                       Parcelable recyclerViewState=smartTableView2.getHeaderLayoutManager().onSaveInstanceState();
-                       //noinspection ConstantConditions
-                       mSmartTableView2.getHeaderRecyclerView().getAdapter().notifyItemChanged(colPos);
+                    mSmartTableView2.getHeightSparseArray().delete(rowPos);
+                    mSmartTableView2.getWidthIntArray().delete(colPos);
+                    if (mSmartTableView2.headerIsShowing()) {
+                        Parcelable recyclerViewState = smartTableView2.getHeaderLayoutManager().onSaveInstanceState();
+                        //noinspection ConstantConditions
+                        mSmartTableView2.getHeaderRecyclerView().getAdapter().notifyItemChanged(colPos);
 
-                       smartTableView2.getHeaderLayoutManager().onRestoreInstanceState(recyclerViewState);
-                   }
-                   for (int i=0;i<smartBaseTableAdapter.getRowCount();i++){
-                       if (i==rowPos){
-                           continue;
-                       }
-                       smartBaseTableAdapter.notifyContentItemChanged(i,colPos,false);
-                   }
-               }
-                View rowView=manager.findViewByPosition(rowPos);
-                if (rowView instanceof SmartRecyclerView){
-                    RecyclerView.Adapter adapter=((SmartRecyclerView) rowView).getAdapter();
-                    if (adapter!=null){
+                        smartTableView2.getHeaderLayoutManager().onRestoreInstanceState(recyclerViewState);
+                    }
+                    for (int i = 0; i < smartBaseTableAdapter.getRowCount(); i++) {
+                        if (i == rowPos) {
+                            continue;
+                        }
+                        smartBaseTableAdapter.notifyContentItemChanged(i, colPos, false);
+                    }
+                }
+                View rowView = manager.findViewByPosition(rowPos);
+                if (rowView instanceof SmartRecyclerView) {
+                    RecyclerView.Adapter adapter = ((SmartRecyclerView) rowView).getAdapter();
+                    if (adapter != null) {
                         adapter.notifyItemChanged(colPos);
                     }
                 }
 
             }
         };
-        smartBaseTableAdapter.setContentObserver(mContentObserver);
+        smartBaseTableAdapter.setContentObserver(contentObserver);
     }
 
     @NonNull
