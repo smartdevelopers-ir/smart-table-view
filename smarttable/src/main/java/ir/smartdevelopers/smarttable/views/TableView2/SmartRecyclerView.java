@@ -7,9 +7,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.recyclerview.widget.RecyclerView;
 
- class SmartRecyclerView extends RecyclerView {
+
+ public class SmartRecyclerView extends RecyclerView {
 
     private int mScrolledX;
     private int mScrolledY;
