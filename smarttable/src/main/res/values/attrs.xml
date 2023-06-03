@@ -1,72 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="imageRes" format="reference" />
-    <attr name="imageWidth" format="dimension|reference" />
-    <attr name="imageHeight" format="dimension|reference" />
-    <attr name="imageVisibility" format="boolean|reference" />
-    <attr name="primaryText" format="string|reference" />
-    <attr name="primaryTextColor" format="color|reference" />
-    <attr name="primaryTextSize" format="dimension|reference" />
-    <attr name="primaryTextFontFamily" format="reference" />
-    <attr name="secondaryText" format="string|reference" />
-    <attr name="secondaryTextColor" format="color|reference" />
-    <attr name="secondaryTextSize" format="dimension|reference" />
-    <attr name="secondaryTextFontFamily" format="reference" />
-
-    <declare-styleable name="SmartHeaderItemView">
-        <attr name="imageRes" />
-        <attr name="imageWidth" />
-        <attr name="imageHeight" />
-        <attr name="imageVisibility" />
-        <attr name="primaryText" />
-        <attr name="primaryTextColor" />
-        <attr name="primaryTextSize" />
-        <attr name="primaryTextFontFamily" />
-        <attr name="secondaryText" />
-        <attr name="secondaryTextColor" />
-        <attr name="secondaryTextSize" />
-        <attr name="secondaryTextFontFamily" />
-        <attr name="android:layout_width"/>
-        <attr name="android:layout_height"/>
-    </declare-styleable>
-    <declare-styleable name="SmartSidebarItemView">
-        <attr name="imageRes" />
-        <attr name="imageWidth" />
-        <attr name="imageHeight" />
-        <attr name="imageVisibility" />
-        <attr name="primaryText" />
-        <attr name="primaryTextColor" />
-        <attr name="primaryTextSize" />
-        <attr name="primaryTextFontFamily" />
-        <attr name="secondaryText" />
-        <attr name="secondaryTextColor" />
-        <attr name="secondaryTextSize" />
-        <attr name="secondaryTextFontFamily" />
-        <attr name="rowNumberText" format="string|reference" />
-        <attr name="android:layout_width"/>
-        <attr name="android:layout_height"/>
-    </declare-styleable>
-    <declare-styleable name="SmartContentItemView">
-        <attr name="primaryText" />
-        <attr name="primaryTextColor" />
-        <attr name="primaryTextSize" />
-        <attr name="primaryTextFontFamily" />
-        <attr name="secondaryText" />
-        <attr name="secondaryTextColor" />
-        <attr name="secondaryTextSize" />
-        <attr name="secondaryTextFontFamily" />
-        <attr name="android:layout_width"/>
-        <attr name="android:layout_height"/>
-    </declare-styleable>
     <declare-styleable name="SmartTableView">
-        <attr name="android:layout_width"/>
-        <attr name="android:layout_height"/>
-        <attr name="sidebarItemBottomMargin" format="integer|reference"/>
-        <attr name="headerBetweenItemMargin" format="integer|reference"/>
-        <attr name="sidebarItemBackground" format="color|reference"/>
-        <attr name="headerItemBackground" format="color|reference"/>
-        <attr name="contentItemBackground" format="color|reference"/>
         <attr name="cornerTopRightView" format="reference"/>
         <attr name="cornerTopRightColor" format="color|reference"/>
         <attr name="headerBackground" format="color|reference"/>
@@ -75,32 +10,8 @@
         <attr name="showSidebar" format="boolean|reference"/>
         <attr name="showHeader" format="boolean|reference"/>
         <attr name="fitHorizontally" format="boolean|reference"/>
-        <attr name="fitAllWidthToMaxOfColumnWidth" format="boolean|reference"/>
-        <attr name="stretchIfContentNotFitScreen" format="boolean|reference"/>
-        <attr name="stretchHeaderWidthToContentWidth" format="boolean|reference"/>
-        <attr name="stretchContentWidthToHeaderWidth" format="boolean|reference"/>
-        <attr name="android:layoutDirection"/>
-        <attr name="contentHorizontalDivider" format="reference"/>
-        <attr name="contentVerticalDivider" format="reference"/>
-        <attr name="headerDivider" format="reference"/>
-        <attr name="sidebarDivider" format="reference"/>
         <attr name="showDefaultDividers" format="boolean|reference"/>
-    </declare-styleable>
-    <declare-styleable name="SmartTableView2">
-        <attr name="cornerTopRightView" />
-        <attr name="cornerTopRightColor" />
-        <attr name="headerBackground" />
-        <attr name="sidebarBackground" />
-        <attr name="contentBackground" />
-        <attr name="showSidebar" />
-        <attr name="showHeader"/>
-        <attr name="fitHorizontally" />
-        <attr name="contentHorizontalDivider" />
-        <attr name="contentVerticalDivider" />
-        <attr name="headerDivider" />
-        <attr name="sidebarDivider" />
-        <attr name="showDefaultDividers"/>
-        <attr name="stretchIfContentNotFitScreen" />
+        <attr name="stretchIfContentNotFitScreen" format="boolean|reference"/>
         <attr name="verticalSplitterWidth" format="dimension|reference" />
         <attr name="horizontalSplitterHeight" format="dimension|reference" />
     </declare-styleable>

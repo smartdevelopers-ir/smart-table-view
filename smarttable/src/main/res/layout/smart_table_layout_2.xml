@@ -20,7 +20,7 @@
 
         />
 
-    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+    <ir.smartdevelopers.smarttable.views.TableView.SmartRecyclerView
         android:id="@+id/smart_table_view_header_recyclerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
         tools:minWidth="120dp"
         />
 
-    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+    <ir.smartdevelopers.smarttable.views.TableView.SmartRecyclerView
         android:id="@+id/smart_table_view_sidebar_recyclerView"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -51,7 +51,7 @@
         tools:layout_height="match_parent"
         tools:layout_width="40dp" />
 
-    <ir.smartdevelopers.smarttable.views.TableView2.SmartRecyclerView
+    <ir.smartdevelopers.smarttable.views.TableView.SmartRecyclerView
         android:id="@+id/smart_table_view_content_recyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
