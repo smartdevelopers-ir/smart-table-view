@@ -3,16 +3,16 @@
 
     <declare-styleable name="SmartTableView">
         <attr name="cornerTopRightView" format="reference"/>
-        <attr name="cornerTopRightColor" format="color|reference"/>
-        <attr name="headerBackground" format="color|reference"/>
-        <attr name="sidebarBackground" format="color|reference"/>
-        <attr name="contentBackground" format="color|reference"/>
-        <attr name="showSidebar" format="boolean|reference"/>
-        <attr name="showHeader" format="boolean|reference"/>
-        <attr name="fitHorizontally" format="boolean|reference"/>
-        <attr name="showDefaultDividers" format="boolean|reference"/>
-        <attr name="stretchIfContentNotFitScreen" format="boolean|reference"/>
-        <attr name="verticalSplitterWidth" format="dimension|reference" />
-        <attr name="horizontalSplitterHeight" format="dimension|reference" />
+        <attr name="cornerTopRightColor" format="color"/>
+<!--        <attr name="headerBackground" format="color|reference"/>-->
+<!--        <attr name="sidebarBackground" format="color|reference"/>-->
+<!--        <attr name="contentBackground" format="color|reference"/>-->
+        <attr name="showSidebar" format="boolean"/>
+        <attr name="showHeader" format="boolean"/>
+        <attr name="fitHorizontally" format="boolean"/>
+        <attr name="showDefaultDividers" format="boolean"/>
+        <attr name="stretchIfContentNotFitScreen" format="boolean"/>
+        <attr name="verticalSplitterWidth" format="dimension" />
+        <attr name="horizontalSplitterHeight" format="dimension" />
     </declare-styleable>
 </resources>
