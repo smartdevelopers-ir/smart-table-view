@@ -36,16 +36,9 @@ android {
     }
 }
 group = 'ir.smartdevelopers'
-version = '4.1.17'
+version = '1.5.1'
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from android.sourceSets.main.java.srcDirs
-}
-task javadocJar2(type: Jar) {
-    archiveClassifier.set('javadoc')
-    from android.sourceSets.main.java.srcDirs
-}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -65,14 +58,12 @@ publishing {
         // Creates a Maven publication called "release".
         release(MavenPublication) {
             // Applies the component for the release build variant.
-//                from components.release
             afterEvaluate {
                 from components.release
             }
             // You can then customize attributes of the publication as shown below.
             groupId = 'ir.smartdevelopers'
             artifactId = 'smart-table-view'
-//                version = version
             pom {
                 name = 'smart-table-view'
                 description = 'Create table in android easily'
@@ -114,15 +105,4 @@ publishing {
 signing {
     sign configurations.archives
 }
-//
-//
-//javadoc {
-//    if(JavaVersion.current().isJava9Compatible()) {
-//        options.addBooleanOption('html5', true)
-//    }
-//}
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar2
-}
