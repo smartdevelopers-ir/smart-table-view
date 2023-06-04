@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
             // do something
         }
 
-
     }
 
     private void fillLists() {
