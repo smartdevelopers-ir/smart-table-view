@@ -19,10 +19,9 @@ public class SmartTableUtil {
 
     public static SparseIntArray getAverageWidth(SmartTableView smartTableView){
         int sidebarWidth=0;
-        SparseIntArray tempWidthSize=new SparseIntArray();
         SparseIntArray widthSize=new SparseIntArray();
         if (smartTableView.sideBarIsShowing()){
-            sidebarWidth=SparseUtil.getMax(smartTableView.getSidebarLayoutManager().getCellsHeightHolder());
+            sidebarWidth=SmartTableUtil.measureWidth(smartTableView.getSidebarRecyclerView());
 
         }
         int deviceWidth= smartTableView.getContext().getResources().getDisplayMetrics().widthPixels;
@@ -48,7 +47,7 @@ public class SmartTableUtil {
         int colCount= smartTableView.getAdapter().getColumnCount();
 
         for (int i=0;i<colCount;i++){
-            int maxColWidth= smartTableView.getAdapter().getMaxColumnWidth(i);
+            int maxColWidth= smartTableView.getMaxColumnWidth(i);
             widthSize.put(i,maxColWidth);
             tempWidthSize.put(i,maxColWidth);
         }

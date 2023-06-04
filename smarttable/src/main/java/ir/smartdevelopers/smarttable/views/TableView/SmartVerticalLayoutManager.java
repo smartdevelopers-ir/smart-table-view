@@ -2,6 +2,7 @@ package ir.smartdevelopers.smarttable.views.TableView;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -12,7 +13,6 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
 
     private final SparseIntArray mCellsHeightHolder = new SparseIntArray();
     private SmartTableView mSmartTableView;
-    private HorizontalScrollListener mHorizontalScrollListener;
 
     public SmartVerticalLayoutManager(Context context) {
         super(context);
@@ -37,7 +37,7 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
     public void measureChildWithMargins(@NonNull View child, int widthUsed, int heightUsed) {
         measureChild(child, widthUsed, heightUsed);
         int pos = getPosition(child);
-        int height = mSmartTableView.getHeightSparseArray().get(pos);
+        int height = mSmartTableView.getHeightSizeArray().get(pos);
         if (height != 0) {
             if (child.getLayoutParams() != null) {
                 child.getLayoutParams().height = height;
@@ -51,21 +51,24 @@ class SmartVerticalLayoutManager extends LinearLayoutManager {
 
     @Override
     public void measureChild(@NonNull View child, int widthUsed, int heightUsed) {
-
-        mHorizontalScrollListener = mSmartTableView.getHorizontalScrollListener();
+//        super.measureChild(child,widthUsed,heightUsed);
+        HorizontalScrollListener horizontalScrollListener = mSmartTableView.getHorizontalScrollListener();
 
         if (child instanceof SmartRecyclerView) {
             SmartRecyclerView contentChild = (SmartRecyclerView) child;
             SmartHorizontalContentLayoutManager contentLayoutManager = (SmartHorizontalContentLayoutManager) contentChild.getLayoutManager();
 
-            int scrollPosition = mHorizontalScrollListener.getScrollPosition();
-            int scrollOffset = mHorizontalScrollListener.getScrollPositionOffset();
+            int scrollPosition = horizontalScrollListener.getScrollPosition();
+            int scrollOffset = horizontalScrollListener.getScrollPositionOffset();
+            Log.d("TTT",String.format("scrollPosition = %d , scrollOffset = %d",scrollPosition,scrollOffset));
             if (scrollPosition > 0) {
                 contentLayoutManager.scrollToPositionWithOffset(scrollPosition, scrollOffset);
             }
         }
         mCellsHeightHolder.put(getPosition(child), child.getMeasuredHeight());
     }
+
+
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {

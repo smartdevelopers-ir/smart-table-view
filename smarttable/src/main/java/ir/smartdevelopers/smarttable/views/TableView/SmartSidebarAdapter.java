@@ -18,7 +18,7 @@ final class SmartSidebarAdapter extends RecyclerView.Adapter<SmartSidebarViewHol
             @Override
             public void onSidebarItemChanged(int position, boolean changeSize) {
                 if (changeSize) {
-                    mSmartTableView.getHeightSparseArray().delete(position);
+                    mSmartTableView.getHeightSizeArray().delete(position);
                     if (mSmartTableView.getContentRecyclerView().getAdapter() != null) {
                         mSmartTableView.getContentRecyclerView().getAdapter().notifyItemChanged(position);
                     }
@@ -43,9 +43,9 @@ final class SmartSidebarAdapter extends RecyclerView.Adapter<SmartSidebarViewHol
     public void onBindViewHolder(@NonNull SmartSidebarViewHolder holder, int position) {
 
         mSmartBaseTableAdapter.onBindSidebarViewHolder(holder, position);
-        if (mSmartTableView.getHeightSparseArray().get(position) != 0) {
+        if (mSmartTableView.getHeightSizeArray().get(position) != 0) {
 
-            holder.itemView.getLayoutParams().height = mSmartTableView.getHeightSparseArray().get(position);
+            holder.itemView.getLayoutParams().height = mSmartTableView.getHeightSizeArray().get(position);
 
         }
         if (mOnBindListener != null) {

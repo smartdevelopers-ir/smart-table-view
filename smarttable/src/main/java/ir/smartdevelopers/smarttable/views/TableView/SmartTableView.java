@@ -44,8 +44,9 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
     private boolean mStretchIfNotFit;
     private boolean mFitHorizontally;
 
-    private SparseIntArray mWidthIntArray = new SparseIntArray();
-    private SparseIntArray mHeightSparseArray = new SparseIntArray();
+    /** storing width of columns in this array to reduce calculation*/
+    private SparseIntArray mWidthSizeArray = new SparseIntArray();
+    private SparseIntArray mHeightSizeArray = new SparseIntArray();
     /**
      * for preventing calculating stretch Width  multiple time
      */
@@ -185,8 +186,8 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
         clearAllHolders();
         mContentRecyclerView.setItemAnimator(null);
         mSidebarRecyclerView.setItemAnimator(null);
-        mContentRecyclerView.setItemViewCacheSize(2);
-        mSidebarRecyclerView.setItemViewCacheSize(2);
+        mContentRecyclerView.setItemViewCacheSize(0);
+        mSidebarRecyclerView.setItemViewCacheSize(0);
         if (mShowHeader) {
             mHeaderRecyclerView.setLayoutManager(mHeaderLayoutManager);
 
@@ -245,17 +246,13 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
 
 
     @SuppressWarnings("ConstantConditions")
-    private int getMaxColumnWidth(int position) {
-
-        SparseIntArray intArray = new SparseIntArray();
-        int childrenCount = mContentRecyclerView.getChildCount();
-        for (int i = 0; i < childrenCount; i++) {
-            SmartHorizontalContentLayoutManager horizontalLayoutManager =
-                    (SmartHorizontalContentLayoutManager) ((SmartRecyclerView) mContentRecyclerView.getChildAt(i)).getLayoutManager();
-            intArray.put(i, horizontalLayoutManager.getCellsWidthHolder().get(position));
+    int getMaxColumnWidth(int position) {
+        int maxWidth = mWidthSizeArray.get(position);
+        if (maxWidth == 0){
+            maxWidth = mAdapter.getMaxColumnWidth(position);
+            mWidthSizeArray.put(position,maxWidth);
         }
-        intArray.put(intArray.size(), getHeaderLayoutManager().getCellsWidthHolder().get(position));
-        return SparseUtil.getMax(intArray);
+        return maxWidth;
     }
 
     public SmartRecyclerView getHeaderRecyclerView() {
@@ -344,40 +341,67 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
         mContentRecyclerView.setLayoutParams(contentRecyclerViewParams);
     }
 
-    public boolean isStretchIfNotFit() {
+    public boolean isStretchIfNotFitEnabled() {
         return mStretchIfNotFit;
     }
 
+    /** @param stretchIfNotFit if true, some cells in content of table get stretched to fit
+     * screen if there is room between table and edge of screen
+     * if {@link #setFitHorizontally(boolean)} sets to true, this will be ignored*/
     public void setStretchIfNotFit(boolean stretchIfNotFit) {
         mStretchIfNotFit = stretchIfNotFit;
     }
 
-    SparseIntArray getWidthIntArray() {
-        return mWidthIntArray;
+    SparseIntArray getWidthSizeArray() {
+        return mWidthSizeArray;
+    }
+    public int getScrolledX(){
+        if (mShowHeader){
+            return mHeaderRecyclerView.computeHorizontalScrollOffset();
+        }else {
+            int firstItemPos = mContentLayoutManager.findFirstCompletelyVisibleItemPosition();
+            int lastItemPos = mContentLayoutManager.findLastCompletelyVisibleItemPosition();
+            if (firstItemPos != -1 && lastItemPos != -1){
+                int scrollX =0;
+                SparseIntArray scrollArray = new SparseIntArray();
+                for (int i = firstItemPos; i <= lastItemPos; i++){
+                    SmartRecyclerView rv = (SmartRecyclerView) mContentLayoutManager.findViewByPosition(i);
+                    if (rv != null){
+                        if (scrollArray.get(rv.getScrolledX()) == 0){
+                            scrollArray.put(rv.getScrolledX(),1);
+                        }else {
+                            scrollArray.put(rv.getScrolledX(),scrollArray.get(rv.getScrolledX()) +1);
+                        }
+                    }
+                }
+                int max = SparseUtil.getMax(scrollArray);
+                int maxScrollX = scrollArray.keyAt(scrollArray.indexOfValue(max));
+                return maxScrollX;
+            }
+        }
+        return 0;
     }
 
-    void setWidthIntArray(SparseIntArray widthIntArray) {
-        mWidthIntArray = widthIntArray;
-    }
 
     SparseIntArray calculateStretchWidth() {
         if (!mFitHorizontally) {
-            mWidthIntArray = SmartTableUtil.getStretchedWidth(this);
+            mWidthSizeArray = SmartTableUtil.getStretchedWidth(this);
         } else  {
-            mWidthIntArray = calculateAverageWidth();
+            mWidthSizeArray = calculateAverageWidth();
         }
-        return mWidthIntArray;
+        return mWidthSizeArray;
     }
 
     SparseIntArray calculateAverageWidth() {
-        mWidthIntArray = SmartTableUtil.getAverageWidth(this);
-        return mWidthIntArray;
+        mWidthSizeArray = SmartTableUtil.getAverageWidth(this);
+        return mWidthSizeArray;
     }
 
     public boolean isFitHorizontally() {
         return mFitHorizontally;
     }
 
+    /** If true all content cells gets the same width and fit to screen or device width*/
     public void setFitHorizontally(boolean fitHorizontally) {
         mFitHorizontally = fitHorizontally;
     }
@@ -422,8 +446,8 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
     }
 
 
-    public SparseIntArray getHeightSparseArray() {
-        return mHeightSparseArray;
+    public SparseIntArray getHeightSizeArray() {
+        return mHeightSizeArray;
     }
 
 
@@ -434,8 +458,8 @@ public class SmartTableView extends ConstraintLayout implements SmartBaseTableAd
     }
 
     private void clearAllHolders() {
-        mWidthIntArray.clear();
-        mHeightSparseArray.clear();
+        mWidthSizeArray.clear();
+        mHeightSizeArray.clear();
 
         if (headerIsShowing() && mHeaderRecyclerView.getAdapter() != null) {
             mHeaderLayoutManager.getCellsWidthHolder().clear();

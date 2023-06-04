@@ -11,7 +11,6 @@ final class SmartHorizontalAdapter extends RecyclerView.Adapter<SmartContentView
     private final SmartBaseTableAdapter mSmartBaseTableAdapter;
     private final int mRowPos;
     private final SmartTableView mSmartTableView;
-    private SparseIntArray mWidthIntArray = new SparseIntArray();
 
 
     public SmartHorizontalAdapter(SmartBaseTableAdapter smartBaseTableAdapter,
@@ -32,33 +31,21 @@ final class SmartHorizontalAdapter extends RecyclerView.Adapter<SmartContentView
     @Override
     public void onBindViewHolder(@NonNull SmartContentViewHolder holder, int position) {
 
-        if (mSmartTableView.isStretchIfNotFit() && !mSmartTableView.isFitHorizontally()) {
-            if (mSmartTableView.getWidthIntArray().get(position) == 0) {
-                mWidthIntArray = mSmartTableView.calculateStretchWidth();
+        if (mSmartTableView.isStretchIfNotFitEnabled() && !mSmartTableView.isFitHorizontally()) {
+            if (mSmartTableView.getWidthSizeArray().get(position) == 0) {
+                 mSmartTableView.calculateStretchWidth();
             }
 
         } else if (mSmartTableView.isFitHorizontally()) {
-            if (mSmartTableView.getWidthIntArray().get(position) == 0) {
-                /*if we have calculated before just set another value o this position*/
-                if (position - 1 >= 0) {
-                    if (mSmartTableView.getWidthIntArray().get(position - 1) != 0) {
-                        mSmartTableView.getWidthIntArray().put(position,
-                                mSmartTableView.getWidthIntArray().get(position - 1));
-                    } else {
-                        mWidthIntArray = mSmartTableView.calculateAverageWidth();
-                    }
-                }
+            if (mSmartTableView.getWidthSizeArray().get(position) == 0) {
+                mSmartTableView.calculateAverageWidth();
             }
 
         }
-        mWidthIntArray = mSmartTableView.getWidthIntArray();
-
         ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
-        int max = mWidthIntArray.get(position);
+        int max = mSmartTableView.getWidthSizeArray().get(position);
         if (max == 0) {
-
-            max = mSmartBaseTableAdapter.getMaxColumnWidth(position);
-            mWidthIntArray.put(position, max);
+            max = mSmartTableView.getMaxColumnWidth(position);
         }
         params.width = max;
 

@@ -64,8 +64,8 @@ public final class SmartHorizontalContentLayoutManager extends LinearLayoutManag
                     if (firstView instanceof SmartRecyclerView) {
                         SmartRecyclerView firstRecyleView = (SmartRecyclerView) firstView;
                         SmartRecyclerView newView = (SmartRecyclerView) view;
-                        if (newView.getScrolledX() != firstRecyleView.getScrolledY()) {
-                            int diff = Math.abs(newView.getScrolledX() - firstRecyleView.getScrolledY());
+                        if (newView.getScrolledX() != firstRecyleView.getScrolledX()) {
+                            int diff = Math.abs(newView.getScrolledX() - firstRecyleView.getScrolledX());
                             newView.scrollBy(diff, 0);
                         }
                     }

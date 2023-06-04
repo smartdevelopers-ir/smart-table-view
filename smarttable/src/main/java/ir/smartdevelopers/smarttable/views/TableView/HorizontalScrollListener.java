@@ -248,4 +248,11 @@ class HorizontalScrollListener extends RecyclerView.OnScrollListener implements 
         return mIsHorizontallyMoving;
     }
 
+    public int getXPosition() {
+        return mXPosition;
+    }
+
+    public RecyclerView getLastTouchedRv() {
+        return mLastTouchedRv;
+    }
 }

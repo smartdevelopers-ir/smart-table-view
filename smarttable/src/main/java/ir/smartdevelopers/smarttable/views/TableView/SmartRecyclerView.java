@@ -42,7 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
         super.onScrolled(dx, dy);
     }
     public int getScrolledX() {
-        return mScrolledX;
+        return computeHorizontalScrollOffset();
     }
 
     public void setScrolledX(int scrolledX) {

@@ -203,6 +203,7 @@ final class VerticalScrollListener extends RecyclerView.OnScrollListener impleme
         super.onScrollStateChanged(recyclerView, newState);
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
             recyclerView.removeOnScrollListener(this);
+            renewScrollPosition(recyclerView);
             mCurrentRVTouched = null;
             mIsMoving = false;
         }

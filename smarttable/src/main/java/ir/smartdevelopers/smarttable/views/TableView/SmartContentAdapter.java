@@ -31,8 +31,8 @@ final class SmartContentAdapter extends RecyclerView.Adapter<SmartContentAdapter
                 }
                 if (changeSize) {
 
-                    mSmartTableView.getHeightSparseArray().delete(rowPos);
-                    mSmartTableView.getWidthIntArray().delete(colPos);
+                    mSmartTableView.getHeightSizeArray().delete(rowPos);
+                    mSmartTableView.getWidthSizeArray().delete(colPos);
                     if (mSmartTableView.headerIsShowing()) {
                         Parcelable recyclerViewState = smartTableView.getHeaderLayoutManager().onSaveInstanceState();
                         //noinspection ConstantConditions
@@ -85,7 +85,7 @@ final class SmartContentAdapter extends RecyclerView.Adapter<SmartContentAdapter
         SmartRecyclerView rowRecyclerView = (SmartRecyclerView) holder.itemView;
         SmartHorizontalAdapter horizontalAdapter = new SmartHorizontalAdapter(mSmartTableView.getAdapter(), position,
                 mSmartTableView);
-        if (mSmartTableView.getHeightSparseArray().get(position) != 0) {
+        if (mSmartTableView.getHeightSizeArray().get(position) != 0) {
             rowRecyclerView.setHasFixedSize(true);
         } else {
             rowRecyclerView.setHasFixedSize(false);
@@ -105,8 +105,8 @@ final class SmartContentAdapter extends RecyclerView.Adapter<SmartContentAdapter
             }
 
             int maxHeight = Math.max(contentRowHeight, sidebarHeight);
-            if (sidebarHeight != 0 && mSmartTableView.getHeightSparseArray().get(position) == 0)
-                mSmartTableView.getHeightSparseArray().put(position, maxHeight);
+            if (sidebarHeight != 0 && mSmartTableView.getHeightSizeArray().get(position) == 0)
+                mSmartTableView.getHeightSizeArray().put(position, maxHeight);
             if (maxHeight > sidebarHeight) {
                 // notify sidebar item changed
                 SmartSidebarAdapter sidebarAdapter = (SmartSidebarAdapter) mSmartTableView.getSidebarRecyclerView().getAdapter();
@@ -135,6 +135,19 @@ final class SmartContentAdapter extends RecyclerView.Adapter<SmartContentAdapter
             notifyItemChanged(position);
     }
 
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull ContentRowViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+
+        SmartRecyclerView rowRecyclerView = (SmartRecyclerView) holder.itemView;
+        int rowScrollX = rowRecyclerView.computeHorizontalScrollOffset();
+        int lastScrollX = mSmartTableView.getHorizontalScrollListener().getXPosition();
+        if (rowScrollX != lastScrollX){
+                int diff = lastScrollX - rowScrollX;
+                rowRecyclerView.scrollBy(diff,0);
+            }
+    }
 
     static class ContentRowViewHolder extends RecyclerView.ViewHolder {
 
