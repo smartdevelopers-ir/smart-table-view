@@ -17,7 +17,7 @@ This is a crossTab Table view .
 * Add the dependency
 ```gradle
 	dependencies {
-	        implementation 'com.github.smartdevelopers-ir:smart-table-view:Tag'
+	        implementation 'com.github.smartdevelopers-ir:smart-table-view:1.5.1'
 	}
 ```
 
