@@ -1,3 +1,4 @@
+[![donate](https://img.shields.io/badge/Donate-Crypto-yellow.svg)](https://smartdevelopers-ir.github.io/donate)
 # SmartTableView
 This is a crossTab Table view .
 
@@ -59,4 +60,21 @@ You can see sample for implementian of TableAdapter and more.
         app:horizontalSplitterHeight="1dp"
         />
 ```
+
+* fitHorizontally="true"
+4 coulumns
+
+<img src="images/fit_horizontally.png" width="250">
+
+* stretchIfContentNotFitScreen="true"
+
+2 columns
+
+<img src="images/strech.png" width="250">
+
 For more information read <a href="https://smartdevelopers-ir.github.io/smart-table-view/SmartTableDoc/" >  Smart Table Document </a>
+
+# Donation
+You can support me by donating with cryptocurrency :)
+
+[I glad to support you](https://smartdevelopers-ir.github.io/donate)
